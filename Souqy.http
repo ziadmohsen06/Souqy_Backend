@@ -1,0 +1,6 @@
+@Souqy_HostAddress = http://localhost:5072
+
+GET {{Souqy_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
