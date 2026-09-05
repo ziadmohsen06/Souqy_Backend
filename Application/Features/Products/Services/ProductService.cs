@@ -1,7 +1,9 @@
 using Mapster;
-using Souqy.Features.Products.Domain;
+using Domain;
+using Infrastructure.Products;
+using Application.Features.Products.DTOs;
 
-namespace Souqy.Features.Products
+namespace Application.Features.Products.Services
 {
     public class ProductService
     {

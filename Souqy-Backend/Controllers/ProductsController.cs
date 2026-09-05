@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Application.Features.Products.Services;
+using Application.Features.Products.DTOs;
 
-namespace Souqy.Features.Products.Endpoints
+namespace Souqy.Controllers
 {
     [ApiController]
     [Route("api/v1/products")]
@@ -10,7 +12,7 @@ namespace Souqy.Features.Products.Endpoints
 
         public ProductsController(ProductService service)
         {
-            _service = service;
+        _service = service;
         }
 
         [HttpGet]

@@ -1,8 +1,8 @@
 using Mapster;
-using Souqy.Features.Products;
-using Souqy.Features.Products.Domain;
+using Application.Features.Products.DTOs;
+using Domain;
 
-namespace Souqy.Mapping
+namespace Application.Mapping
 {
     public static class MapsterConfig
     {

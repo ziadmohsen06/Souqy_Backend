@@ -1,6 +1,6 @@
-using Souqy.Features.Products.Domain;
+using Domain;
 
-namespace Souqy.Features.Products
+namespace Infrastructure.Products
 {
     public class InMemoryProductRepository : IProductRepository
     {

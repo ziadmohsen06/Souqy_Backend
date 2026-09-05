@@ -1,20 +1,18 @@
-using Souqy.Mapping;
-using Souqy.Features.Products;
+using Infrastructure;
+using Application;
 using Souqy.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-// register product services
-builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
-builder.Services.AddScoped<ProductService>();
+
+// Configure infrastructure & application services
+Infrastructure.DI.ConfigureServices(builder.Services);
+Application.DI.ConfigureServices(builder.Services);
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
-// Register Mapster mappings (no-op today but centralizes config)
-MapsterConfig.Register();
 
 var app = builder.Build();
 

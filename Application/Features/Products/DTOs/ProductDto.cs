@@ -1,4 +1,4 @@
-namespace Souqy.Features.Products
+namespace Application.Features.Products.DTOs
 {
     public class ProductDto
     {

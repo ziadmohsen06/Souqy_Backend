@@ -1,4 +1,4 @@
-namespace Souqy.Features.Products.Domain
+namespace Domain
 {
     public class Product
     {
