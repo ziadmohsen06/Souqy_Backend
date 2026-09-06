@@ -1,5 +1,5 @@
 using Mapster;
-using Domain;
+using Domain.Entities;
 using Infrastructure.Products;
 using Application.Features.Products.DTOs;
 
