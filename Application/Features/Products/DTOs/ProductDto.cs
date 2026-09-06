@@ -11,15 +11,27 @@ namespace Application.Features.Products.DTOs
 
     public class CreateProductDto
     {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(200, MinimumLength = 1)]
         public string Name { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.StringLength(2000)]
         public string? Description { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Range(0, double.MaxValue)]
         public decimal Price { get; set; }
     }
 
     public class UpdateProductDto
     {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(200, MinimumLength = 1)]
         public string Name { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.StringLength(2000)]
         public string? Description { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Range(0, double.MaxValue)]
         public decimal Price { get; set; }
     }
 }

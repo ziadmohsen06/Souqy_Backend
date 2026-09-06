@@ -18,8 +18,9 @@ namespace Infrastructure
                 options.UseNpgsql(conn);
             });
 
-            // Register EF repository (scoped) and keep InMemory implementation present but not registered
+            // Register EF repositories (scoped)
             services.AddScoped<IProductRepository, EfProductRepository>();
+            services.AddScoped<ICategoryRepository, EfCategoryRepository>();
 
             return services;
         }

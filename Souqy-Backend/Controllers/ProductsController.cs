@@ -16,9 +16,9 @@ namespace Souqy.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
+        public async Task<ActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] Guid? categoryId = null, CancellationToken ct = default)
         {
-            var result = await _service.GetPagedAsync(page <= 0 ? 1 : page, pageSize <= 0 ? 20 : pageSize, ct);
+            var result = await _service.GetPagedAsync(page <= 0 ? 1 : page, pageSize <= 0 ? 20 : pageSize, categoryId, ct);
             return Ok(result);
         }
 
