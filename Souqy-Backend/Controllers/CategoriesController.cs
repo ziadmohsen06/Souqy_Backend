@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
-using Application.Features.Categories.Services;
 using Application.Features.Categories.DTOs;
+using Application.Features.Categories.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Souqy.Controllers
 {
@@ -16,6 +17,7 @@ namespace Souqy.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult> GetAll(CancellationToken ct = default)
         {
             var items = await _service.GetAllAsync(ct);
@@ -23,6 +25,7 @@ namespace Souqy.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetById(Guid id, CancellationToken ct = default)
         {
             var dto = await _service.GetByIdAsync(id, ct);
