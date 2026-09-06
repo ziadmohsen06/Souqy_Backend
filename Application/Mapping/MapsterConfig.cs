@@ -1,6 +1,6 @@
 using Mapster;
 using Application.Features.Products.DTOs;
-using Domain;
+using Domain.Entities;
 
 namespace Application.Mapping
 {

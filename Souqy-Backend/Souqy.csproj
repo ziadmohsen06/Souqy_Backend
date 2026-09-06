@@ -1,17 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
   <PropertyGroup>
+
     <TargetFramework>net10.0</TargetFramework>
+
     <Nullable>enable</Nullable>
+
     <ImplicitUsings>enable</ImplicitUsings>
+
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <UserSecretsId>923bec48-b0c6-4f59-81cb-818b30197022</UserSecretsId>
+
   </PropertyGroup>
+
   <ItemGroup>
+
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\Application\Application.csproj" />
+
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4">
+
+      <PrivateAssets>all</PrivateAssets>
+
+    </PackageReference>
+
   </ItemGroup>
+
+  <ItemGroup>
+
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+
+    <ProjectReference Include="..\Application\Application.csproj" />
+
+  </ItemGroup>
+
 </Project>

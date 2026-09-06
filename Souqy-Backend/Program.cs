@@ -3,6 +3,8 @@ using Application;
 using Souqy.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddUserSecrets(userSecretsId: "923bec48-b0c6-4f59-81cb-818b30197022");
+
 
 // Add services to the container.
 builder.Services.AddControllers();
