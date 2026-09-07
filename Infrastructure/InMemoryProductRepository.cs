@@ -44,5 +44,13 @@ namespace Infrastructure.Products
             if (idx >= 0) _items[idx] = product;
             return Task.CompletedTask;
         }
+
+        // this method is to satisfy the interface requirement as this file is a dummy in-memory repository only for testing purposes.
+        public Task<IEnumerable<Product>> GetRecommendationsAsync(Guid productId, int count = 4, CancellationToken ct = default)
+        {
+            // Just return an empty list since this is an in-memory dummy repository
+            return Task.FromResult<IEnumerable<Product>>(new List<Product>());
+        }
+
     }
 }

@@ -1,20 +1,24 @@
 using Mapster;
 using Domain.Entities;
 using Infrastructure.Products;
+using Infrastructure.Services;
 using Application.Features.Products.DTOs;
 using Microsoft.Extensions.Caching.Memory;
+using System.Text.Json;
 
 namespace Application.Features.Products.Services
 {
     public class ProductService
     {
+        private readonly IEmbeddingService _embeddingService;
         private readonly IProductRepository _repository;
         private readonly Microsoft.Extensions.Caching.Memory.IMemoryCache _cache;
 
-        public ProductService(IProductRepository repository, Microsoft.Extensions.Caching.Memory.IMemoryCache cache)
+        public ProductService(IProductRepository repository, Microsoft.Extensions.Caching.Memory.IMemoryCache cache, IEmbeddingService embeddingService)
         {
             _repository = repository;
             _cache = cache;
+            _embeddingService = embeddingService;
         }
 
         public async Task<PagedResult<ProductDto>> GetPagedAsync(int page, int pageSize, Guid? categoryId = null, CancellationToken ct = default)
@@ -65,6 +69,12 @@ namespace Application.Features.Products.Services
             product.Id = Guid.NewGuid();
             product.CreatedAt = DateTime.UtcNow;
 
+            // 1. Get the float array from Python
+            float[] embeddingArray = await _embeddingService.GenerateEmbeddingAsync($"{product.Name}. {product.Description}");
+
+            // 2. Convert it to a string format PostgreSQL understands: "[0.1, 0.2, ...]"
+            product.Embedding = "[" + string.Join(",", embeddingArray) + "]";
+
             await _repository.AddAsync(product, ct);
             return product.Adapt<ProductDto>();
         }
@@ -83,6 +93,18 @@ namespace Application.Features.Products.Services
         public Task DeleteAsync(Guid id, CancellationToken ct = default)
         {
             return _repository.DeleteAsync(id, ct);
+        }
+
+
+
+        public async Task<IEnumerable<RecommendationDto>> GetRecommendationsAsync(Guid productId, int count = 4, CancellationToken ct = default)
+        {
+            // 1. Get the raw JSON string from Infrastructure
+            var jsonString = await _embeddingService.GetRecommendationsJsonAsync(productId, count);
+            
+            // 2. Deserialize it here in Application where the DTO lives
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            return JsonSerializer.Deserialize<List<RecommendationDto>>(jsonString, options) ?? new List<RecommendationDto>();
         }
     }
 }

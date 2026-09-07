@@ -61,6 +61,9 @@ namespace Infrastructure
                 b.Property(p => p.ImageUrl).HasMaxLength(500).HasColumnName("ImageUrl");
                 b.Property(p => p.CategoryId).IsRequired().HasColumnName("CategoryId");
                 b.Property(p => p.CreatedAt).HasColumnType("timestamptz").HasDefaultValueSql("CURRENT_TIMESTAMP").HasColumnName("CreatedAt");
+                b.Property(p => p.Embedding)
+                 .HasColumnType("text")
+                 .HasColumnName("Embedding");
 
                 b.HasCheckConstraint("CK_Products_Price", "\"Price\" >= 0");
                 b.HasCheckConstraint("CK_Products_StockQuantity", "\"StockQuantity\" >= 0");
@@ -273,5 +276,6 @@ namespace Infrastructure
 
             base.OnModelCreating(modelBuilder);
         }
+
     }
 }
