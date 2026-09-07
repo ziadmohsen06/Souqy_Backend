@@ -6,7 +6,10 @@ namespace Application.Features.Products.DTOs
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public decimal Price { get; set; }
+        public string? DefaultColor { get; set; }
+        public string? DefaultImageUrl { get; set; }
         public DateTime CreatedAt { get; set; }
+        public List<ColorVariantDto> ColorVariants { get; set; } = new();
     }
 
     public class CreateProductDto

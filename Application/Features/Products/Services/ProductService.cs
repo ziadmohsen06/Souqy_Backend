@@ -69,6 +69,10 @@ namespace Application.Features.Products.Services
             product.Id = Guid.NewGuid();
             product.CreatedAt = DateTime.UtcNow;
 
+            // KNOWN GAP: a newly created product has zero ProductVariants. Stock and
+            // per-color images now live on ProductVariant, so until a variant is added
+            // (separate endpoint, not yet built) this product cannot be added to a cart
+            // or ordered. Acceptable for now: variants are managed independently.
             // 1. Get the float array from Python (gracefully handles Python service being down)
             float[]? embeddingArray = await _embeddingService.GenerateEmbeddingAsync($"{product.Name}. {product.Description}");
 
