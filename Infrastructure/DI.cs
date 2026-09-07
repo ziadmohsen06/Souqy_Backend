@@ -24,12 +24,6 @@ namespace Infrastructure
                 options.UseNpgsql(conn);
             });
 
-            // // 2. HARDCODED CONNECTION STRING TO BYPASS ALL CONFIGURATION GHOSTS
-            // services.AddDbContext<ApplicationDbContext>(options =>
-            // {
-            //     // ⚠️ REPLACE 'YOUR_REAL_PASSWORD' WITH YOUR ACTUAL POSTGRES PASSWORD ⚠️
-            //     options.UseNpgsql("Host=localhost;Port=5433;Database=souqy;Username=postgres;Password=zisco2002;Include Error Detail=true");
-            // });
 
             // Register EF repositories (scoped)
             services.AddScoped<IProductRepository, EfProductRepository>();

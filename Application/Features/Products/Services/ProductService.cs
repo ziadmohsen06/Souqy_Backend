@@ -69,11 +69,18 @@ namespace Application.Features.Products.Services
             product.Id = Guid.NewGuid();
             product.CreatedAt = DateTime.UtcNow;
 
-            // 1. Get the float array from Python
-            float[] embeddingArray = await _embeddingService.GenerateEmbeddingAsync($"{product.Name}. {product.Description}");
+            // 1. Get the float array from Python (gracefully handles Python service being down)
+            float[]? embeddingArray = await _embeddingService.GenerateEmbeddingAsync($"{product.Name}. {product.Description}");
 
-            // 2. Convert it to a string format PostgreSQL understands: "[0.1, 0.2, ...]"
-            product.Embedding = "[" + string.Join(",", embeddingArray) + "]";
+            // 2. Convert it to a string format PostgreSQL understands, or leave null if failed
+            if (embeddingArray != null && embeddingArray.Length > 0)
+            {
+                product.Embedding = "[" + string.Join(",", embeddingArray) + "]";
+            }
+            else
+            {
+                product.Embedding = null; // Save without embedding if Python is unavailable
+            }
 
             await _repository.AddAsync(product, ct);
             return product.Adapt<ProductDto>();

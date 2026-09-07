@@ -7,19 +7,32 @@ namespace Infrastructure.Services
         // Just create a static, reusable HttpClient. No DI needed!
         private static readonly HttpClient _httpClient = new HttpClient();
 
-        public async Task<float[]> GenerateEmbeddingAsync(string text)
+        public async Task<float[]?> GenerateEmbeddingAsync(string text)
         {
-            var response = await _httpClient.PostAsJsonAsync(
-                "http://localhost:8000/generate-embedding", 
-                new { text }
-            );
-            
-            response.EnsureSuccessStatusCode();
-            
-            var result = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
-            return result?.Embedding ?? throw new Exception("Failed to get embedding from Python service");
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync(
+                    "http://localhost:8000/generate-embedding", 
+                    new { text }
+                );
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    return null; // Fail gracefully if Python returns an error
+                }
+                
+                var result = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
+                return result?.Embedding;
+            }
+            catch
+            {
+                // If Python service is down or any network error occurs, return null.
+                // This allows the product to be saved without an embedding.
+                return null;
+            }
         }
 
+        
         public async Task<string> GetRecommendationsJsonAsync(Guid productId, int count = 4)
         {
             var response = await _httpClient.GetAsync($"http://localhost:8000/recommendations/{productId}?limit={count}");
