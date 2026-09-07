@@ -12,6 +12,11 @@ namespace Infrastructure
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(configPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+                // The connection string lives in the Souqy-Backend user secrets
+                // (ConnectionStrings:DefaultConnection); load them so design-time
+                // tooling (dotnet ef) can resolve it the same way the host does.
+                .AddUserSecrets("923bec48-b0c6-4f59-81cb-818b30197022")
                 .AddEnvironmentVariables()
                 .Build();
 

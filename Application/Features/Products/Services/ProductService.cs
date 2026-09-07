@@ -65,6 +65,10 @@ namespace Application.Features.Products.Services
             product.Id = Guid.NewGuid();
             product.CreatedAt = DateTime.UtcNow;
 
+            // KNOWN GAP: a newly created product has zero ProductVariants. Stock and
+            // per-color images now live on ProductVariant, so until a variant is added
+            // (separate endpoint, not yet built) this product cannot be added to a cart
+            // or ordered. Acceptable for now: variants are managed independently.
             await _repository.AddAsync(product, ct);
             return product.Adapt<ProductDto>();
         }

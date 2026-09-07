@@ -21,6 +21,13 @@ namespace Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // IdempotencyRecord is defined in Domain and reachable via the User.IdempotencyRecords
+            // navigation, so EF discovers it by convention — but nothing configures or uses it yet
+            // (OrderService relies on Order.IdempotencyKey instead). Exclude it from the model so it
+            // doesn't add an unexpected table to the shared database. Remove this Ignore when the
+            // idempotency-record feature is actually built and configured.
+            modelBuilder.Ignore<Domain.Entities.IdempotencyRecord>();
+
             modelBuilder.Entity<ProductVariant>(entity =>
             {
                 entity.ToTable("ProductVariants");
