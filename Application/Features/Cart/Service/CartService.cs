@@ -19,7 +19,6 @@ namespace Application.Features.Cart.Service
         {
             var cart = await _context.Carts
                 .Include(c => c.Items)
-                .ThenInclude(i => i.Product)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null)
@@ -42,7 +41,6 @@ namespace Application.Features.Cart.Service
         {
             var cart = await _context.Carts
                 .Include(c => c.Items)
-                .ThenInclude(i => i.Product)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null)
@@ -54,64 +52,82 @@ namespace Application.Features.Cart.Service
             {
                 Id = ci.Id,
                 ProductId = ci.ProductId,
-                ProductName = ci.Product?.Name ?? string.Empty,
-                UnitPrice = ci.Product?.Price ?? 0m,
+                ProductVariantId = ci.ProductVariantId,
+                ProductName = ci.ProductName,
+                Color = ci.Color,
+                ColorImageUrl = ci.ColorImageUrl,
+                UnitPrice = ci.UnitPrice,
                 Quantity = ci.Quantity
             }).ToList();
         }
 
         public async Task<CartItemDto> AddToCartAsync(Guid userId, AddToCartDto dto)
         {
+            // Validate product exists
             var product = await _context.Products.FindAsync(dto.ProductId);
             if (product == null)
             {
                 throw new KeyNotFoundException("Product not found.");
             }
 
-            if (product.StockQuantity < dto.Quantity)
+            // Validate product variant exists and has stock
+            var variant = await _context.ProductVariants.FindAsync(dto.ProductVariantId);
+            if (variant == null)
             {
-                throw new InvalidOperationException($"Insufficient stock for product '{product.Name}'. Available: {product.StockQuantity}");
+                throw new KeyNotFoundException("Product color variant not found.");
             }
 
+            if (variant.StockQuantity < dto.Quantity)
+            {
+                throw new InvalidOperationException(
+                    $"Insufficient stock for '{product.Name}' in {variant.Color}. Available: {variant.StockQuantity}");
+            }
+
+            // Get or create user's cart
             var cart = await GetOrCreateCartAsync(userId);
-            var existingItem = cart.Items.FirstOrDefault(ci => ci.ProductId == dto.ProductId);
+
+            // Check if product variant already in cart
+            var existingItem = cart.Items.FirstOrDefault(ci => ci.ProductVariantId == dto.ProductVariantId);
 
             if (existingItem != null)
             {
                 existingItem.Quantity += dto.Quantity;
                 cart.UpdatedAt = DateTime.UtcNow;
                 _context.CartItems.Update(existingItem);
-                await _context.SaveChangesAsync();
-
-                return new CartItemDto
+            }
+            else
+            {
+                var cartItem = new CartItem
                 {
-                    Id = existingItem.Id,
-                    ProductId = existingItem.ProductId,
+                    Id = Guid.NewGuid(),
+                    CartId = cart.Id,
+                    ProductId = product.Id,
+                    ProductVariantId = variant.Id,
                     ProductName = product.Name,
+                    Color = variant.Color,
+                    ColorImageUrl = variant.ColorImageUrl,
                     UnitPrice = product.Price,
-                    Quantity = existingItem.Quantity
+                    Quantity = dto.Quantity
                 };
+                cart.UpdatedAt = DateTime.UtcNow;
+                _context.CartItems.Add(cartItem);
             }
 
-            var cartItem = new CartItem
-            {
-                Id = Guid.NewGuid(),
-                CartId = cart.Id,
-                ProductId = product.Id,
-                Quantity = dto.Quantity
-            };
-
-            cart.UpdatedAt = DateTime.UtcNow;
-            _context.CartItems.Add(cartItem);
             await _context.SaveChangesAsync();
+
+            var item = await _context.CartItems
+                .FirstOrDefaultAsync(ci => ci.ProductVariantId == dto.ProductVariantId && ci.CartId == cart.Id);
 
             return new CartItemDto
             {
-                Id = cartItem.Id,
-                ProductId = cartItem.ProductId,
-                ProductName = product.Name,
-                UnitPrice = product.Price,
-                Quantity = cartItem.Quantity
+                Id = item!.Id,
+                ProductId = item.ProductId,
+                ProductVariantId = item.ProductVariantId,
+                ProductName = item.ProductName,
+                Color = item.Color,
+                ColorImageUrl = item.ColorImageUrl,
+                UnitPrice = item.UnitPrice,
+                Quantity = item.Quantity
             };
         }
 

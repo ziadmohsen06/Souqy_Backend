@@ -37,19 +37,26 @@ namespace Application.Features.Orders.Service
             {
                 foreach (var itemDto in dto.Items)
                 {
-                    var product = await _context.Products.FindAsync(itemDto.ProductId);
+                    var product = await _context.Products
+                        .Include(p => p.Variants)
+                        .FirstOrDefaultAsync(p => p.Id == itemDto.ProductId);
+
                     if (product == null)
                     {
                         throw new KeyNotFoundException($"Product with ID {itemDto.ProductId} was not found.");
                     }
 
-                    if (product.StockQuantity < itemDto.Quantity)
+                    var variant = product.Variants.FirstOrDefault();
+                    if (variant != null && variant.StockQuantity < itemDto.Quantity)
                     {
-                        throw new InvalidOperationException($"Insufficient stock for product '{product.Name}'. Available: {product.StockQuantity}");
+                        throw new InvalidOperationException($"Insufficient stock for product '{product.Name}'. Available: {variant.StockQuantity}");
                     }
 
-                    // Reserve stock
-                    product.StockQuantity -= itemDto.Quantity;
+                    if (variant != null)
+                    {
+                        variant.StockQuantity -= itemDto.Quantity;
+                        _context.ProductVariants.Update(variant);
+                    }
 
                     var itemTotal = product.Price * itemDto.Quantity;
                     totalAmount += itemTotal;
@@ -59,6 +66,7 @@ namespace Application.Features.Orders.Service
                         Id = Guid.NewGuid(),
                         ProductId = product.Id,
                         ProductName = product.Name,
+                        Color = variant?.Color,
                         UnitPrice = product.Price,
                         Quantity = itemDto.Quantity
                     });
@@ -69,7 +77,6 @@ namespace Application.Features.Orders.Service
                 // Checkout from user's Cart
                 var cart = await _context.Carts
                     .Include(c => c.Items)
-                    .ThenInclude(i => i.Product)
                     .FirstOrDefaultAsync(c => c.UserId == userId);
 
                 if (cart == null || cart.Items.Count == 0)
@@ -79,30 +86,36 @@ namespace Application.Features.Orders.Service
 
                 foreach (var cartItem in cart.Items)
                 {
-                    if (cartItem.Product == null) continue;
-
-                    if (cartItem.Product.StockQuantity < cartItem.Quantity)
+                    var variant = await _context.ProductVariants.FindAsync(cartItem.ProductVariantId);
+                    if (variant != null && variant.StockQuantity < cartItem.Quantity)
                     {
-                        throw new InvalidOperationException($"Insufficient stock for product '{cartItem.Product.Name}'. Available: {cartItem.Product.StockQuantity}");
+                        throw new InvalidOperationException($"Insufficient stock for product '{cartItem.ProductName}' ({cartItem.Color}). Available: {variant.StockQuantity}");
                     }
 
-                    cartItem.Product.StockQuantity -= cartItem.Quantity;
+                    if (variant != null)
+                    {
+                        variant.StockQuantity -= cartItem.Quantity;
+                        _context.ProductVariants.Update(variant);
+                    }
 
-                    var itemTotal = cartItem.Product.Price * cartItem.Quantity;
+                    var itemTotal = cartItem.UnitPrice * cartItem.Quantity;
                     totalAmount += itemTotal;
 
                     orderItems.Add(new OrderItem
                     {
                         Id = Guid.NewGuid(),
-                        ProductId = cartItem.Product.Id,
-                        ProductName = cartItem.Product.Name,
-                        UnitPrice = cartItem.Product.Price,
+                        ProductId = cartItem.ProductId,
+                        ProductName = cartItem.ProductName,
+                        Color = cartItem.Color,
+                        UnitPrice = cartItem.UnitPrice,
                         Quantity = cartItem.Quantity
                     });
                 }
 
                 // Clear cart items after checkout
                 _context.CartItems.RemoveRange(cart.Items);
+                cart.UpdatedAt = DateTime.UtcNow;
+                _context.Carts.Update(cart);
             }
 
             var order = new Order
@@ -163,8 +176,10 @@ namespace Application.Features.Orders.Service
                 Items = order.Items.Select(i => new OrderItemDto
                 {
                     Id = i.Id,
+                    OrderId = i.OrderId,
                     ProductId = i.ProductId,
                     ProductName = i.ProductName,
+                    Color = i.Color,
                     UnitPrice = i.UnitPrice,
                     Quantity = i.Quantity
                 }).ToList()
