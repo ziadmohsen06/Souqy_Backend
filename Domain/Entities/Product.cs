@@ -13,6 +13,8 @@ namespace Domain.Entities
         public Guid CategoryId { get; set; }
         public DateTime CreatedAt { get; set; }
 
+        public string? Embedding { get; set; }
+
         // Navigation
         public Category? Category { get; set; }
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();

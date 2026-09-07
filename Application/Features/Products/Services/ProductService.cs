@@ -1,20 +1,24 @@
 using Mapster;
 using Domain.Entities;
 using Infrastructure.Products;
+using Infrastructure.Services;
 using Application.Features.Products.DTOs;
 using Microsoft.Extensions.Caching.Memory;
+using System.Text.Json;
 
 namespace Application.Features.Products.Services
 {
     public class ProductService
     {
+        private readonly IEmbeddingService _embeddingService;
         private readonly IProductRepository _repository;
         private readonly Microsoft.Extensions.Caching.Memory.IMemoryCache _cache;
 
-        public ProductService(IProductRepository repository, Microsoft.Extensions.Caching.Memory.IMemoryCache cache)
+        public ProductService(IProductRepository repository, Microsoft.Extensions.Caching.Memory.IMemoryCache cache, IEmbeddingService embeddingService)
         {
             _repository = repository;
             _cache = cache;
+            _embeddingService = embeddingService;
         }
 
         public async Task<PagedResult<ProductDto>> GetPagedAsync(int page, int pageSize, Guid? categoryId = null, CancellationToken ct = default)
@@ -69,6 +73,19 @@ namespace Application.Features.Products.Services
             // per-color images now live on ProductVariant, so until a variant is added
             // (separate endpoint, not yet built) this product cannot be added to a cart
             // or ordered. Acceptable for now: variants are managed independently.
+            // 1. Get the float array from Python (gracefully handles Python service being down)
+            float[]? embeddingArray = await _embeddingService.GenerateEmbeddingAsync($"{product.Name}. {product.Description}");
+
+            // 2. Convert it to a string format PostgreSQL understands, or leave null if failed
+            if (embeddingArray != null && embeddingArray.Length > 0)
+            {
+                product.Embedding = "[" + string.Join(",", embeddingArray) + "]";
+            }
+            else
+            {
+                product.Embedding = null; // Save without embedding if Python is unavailable
+            }
+
             await _repository.AddAsync(product, ct);
             return product.Adapt<ProductDto>();
         }
@@ -87,6 +104,18 @@ namespace Application.Features.Products.Services
         public Task DeleteAsync(Guid id, CancellationToken ct = default)
         {
             return _repository.DeleteAsync(id, ct);
+        }
+
+
+
+        public async Task<IEnumerable<RecommendationDto>> GetRecommendationsAsync(Guid productId, int count = 4, CancellationToken ct = default)
+        {
+            // 1. Get the raw JSON string from Infrastructure
+            var jsonString = await _embeddingService.GetRecommendationsJsonAsync(productId, count);
+            
+            // 2. Deserialize it here in Application where the DTO lives
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            return JsonSerializer.Deserialize<List<RecommendationDto>>(jsonString, options) ?? new List<RecommendationDto>();
         }
     }
 }

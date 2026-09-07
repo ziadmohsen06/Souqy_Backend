@@ -56,5 +56,12 @@ namespace Souqy.Controllers
             await _service.DeleteAsync(id, ct);
             return NoContent();
         }
+
+        [HttpGet("{id:guid}/recommendations")]
+        public async Task<ActionResult<IEnumerable<RecommendationDto>>> GetRecommendations(Guid id, [FromQuery] int count = 4, CancellationToken ct = default)
+        {
+            var recommendations = await _service.GetRecommendationsAsync(id, count, ct);
+            return Ok(recommendations);
+        }
     }
 }
