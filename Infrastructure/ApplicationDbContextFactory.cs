@@ -8,13 +8,19 @@ namespace Infrastructure
     {
         public ApplicationDbContext CreateDbContext(string[] args)
         {
+            var configPath = Path.Combine(Directory.GetCurrentDirectory(), "../Souqy-Backend");
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddUserSecrets("923bec48-b0c6-4f59-81cb-818b30197022")
+                .SetBasePath(configPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
             var connectionString = configuration.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            }
+
 
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             optionsBuilder.UseNpgsql(connectionString);

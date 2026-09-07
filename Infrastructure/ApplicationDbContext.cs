@@ -13,6 +13,7 @@ namespace Infrastructure
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Product> Products { get; set; } = null!;
+        public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<Cart> Carts { get; set; } = null!;
         public DbSet<CartItem> CartItems { get; set; } = null!;
         public DbSet<Order> Orders { get; set; } = null!;
@@ -20,6 +21,45 @@ namespace Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ProductVariant>(entity =>
+            {
+                entity.ToTable("ProductVariants");
+                entity.HasKey(v => v.Id);
+                entity.Property(v => v.Id).HasDefaultValueSql("gen_random_uuid()");
+
+                entity.Property(v => v.Size)
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnName("Size");
+
+                entity.Property(v => v.Color)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnName("Color");
+
+                entity.Property(v => v.ColorImageUrl)
+                    .HasMaxLength(500)
+                    .HasColumnName("ColorImageUrl");
+
+                entity.Property(v => v.StockQuantity)
+                    .IsRequired()
+                    .HasColumnName("StockQuantity");
+
+                entity.Property(v => v.ProductId)
+                    .IsRequired()
+                    .HasColumnName("ProductId");
+
+                entity.HasOne(v => v.Product)
+                    .WithMany(p => p.Variants)
+                    .HasForeignKey(v => v.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_ProductVariants_Products");
+
+                entity.HasCheckConstraint("CK_ProductVariants_StockQuantity", "\"StockQuantity\" >= 0");
+                entity.HasIndex(v => new { v.ProductId, v.Color })
+                    .IsUnique()
+                    .HasDatabaseName("UQ_ProductVariants_Product_Color");
+            });
             // USERS
             modelBuilder.Entity<User>(b =>
             {
@@ -55,15 +95,12 @@ namespace Infrastructure
                 b.Property(p => p.Name).HasMaxLength(150).IsRequired().HasColumnName("Name");
                 b.Property(p => p.Description).HasColumnType("text").HasColumnName("Description");
                 b.Property(p => p.Price).HasColumnType("numeric(10,2)").IsRequired().HasColumnName("Price");
-                b.Property(p => p.StockQuantity).IsRequired().HasDefaultValue(0).HasColumnName("StockQuantity");
-                b.Property(p => p.Size).HasMaxLength(30).HasColumnName("Size");
                 b.Property(p => p.Color).HasMaxLength(50).HasColumnName("Color");
                 b.Property(p => p.ImageUrl).HasMaxLength(500).HasColumnName("ImageUrl");
                 b.Property(p => p.CategoryId).IsRequired().HasColumnName("CategoryId");
                 b.Property(p => p.CreatedAt).HasColumnType("timestamptz").HasDefaultValueSql("CURRENT_TIMESTAMP").HasColumnName("CreatedAt");
 
                 b.HasCheckConstraint("CK_Products_Price", "\"Price\" >= 0");
-                b.HasCheckConstraint("CK_Products_StockQuantity", "\"StockQuantity\" >= 0");
 
                 b.HasOne(p => p.Category)
                  .WithMany(c => c.Products)
@@ -100,6 +137,11 @@ namespace Infrastructure
                 b.Property(ci => ci.Id).HasDefaultValueSql("gen_random_uuid()");
                 b.Property(ci => ci.CartId).IsRequired().HasColumnName("CartId");
                 b.Property(ci => ci.ProductId).IsRequired().HasColumnName("ProductId");
+                b.Property(ci => ci.ProductVariantId).IsRequired().HasColumnName("ProductVariantId");
+                b.Property(ci => ci.ProductName).IsRequired().HasMaxLength(150).HasColumnName("ProductName");
+                b.Property(ci => ci.Color).IsRequired().HasMaxLength(50).HasColumnName("Color");
+                b.Property(ci => ci.ColorImageUrl).HasMaxLength(500).HasColumnName("ColorImageUrl");
+                b.Property(ci => ci.UnitPrice).HasColumnType("numeric(10,2)").IsRequired().HasColumnName("UnitPrice");
                 b.Property(ci => ci.Quantity).IsRequired().HasColumnName("Quantity");
 
                 b.HasCheckConstraint("CK_CartItems_Quantity", "\"Quantity\" > 0");
@@ -116,7 +158,13 @@ namespace Infrastructure
                  .OnDelete(DeleteBehavior.Restrict)
                  .HasConstraintName("FK_CartItems_Products");
 
-                b.HasIndex(ci => new { ci.CartId, ci.ProductId }).IsUnique().HasDatabaseName("UQ_CartItems_Cart_Product");
+                b.HasOne(ci => ci.ProductVariant)
+                 .WithMany()
+                 .HasForeignKey(ci => ci.ProductVariantId)
+                 .OnDelete(DeleteBehavior.Restrict)
+                 .HasConstraintName("FK_CartItems_ProductVariants");
+
+                b.HasIndex(ci => new { ci.CartId, ci.ProductVariantId }).IsUnique().HasDatabaseName("UQ_CartItems_Cart_ProductVariant");
                 b.HasIndex(ci => ci.ProductId).HasDatabaseName("IX_CartItems_ProductId");
             });
 
@@ -156,6 +204,7 @@ namespace Infrastructure
                 b.Property(oi => oi.OrderId).IsRequired().HasColumnName("OrderId");
                 b.Property(oi => oi.ProductId).HasColumnName("ProductId");
                 b.Property(oi => oi.ProductName).HasMaxLength(150).IsRequired().HasColumnName("ProductName");
+                b.Property(oi => oi.Color).HasMaxLength(50).HasColumnName("Color");
                 b.Property(oi => oi.UnitPrice).HasColumnType("numeric(10,2)").IsRequired().HasColumnName("UnitPrice");
                 b.Property(oi => oi.Quantity).IsRequired().HasColumnName("Quantity");
 
@@ -197,8 +246,6 @@ namespace Infrastructure
                     Name = "Classic T-Shirt",
                     Description = "A comfortable classic tee.",
                     Price = 12.99m,
-                    StockQuantity = 100,
-                    Size = "M",
                     Color = "White",
                     ImageUrl = "",
                     CategoryId = cat1,
@@ -210,8 +257,6 @@ namespace Infrastructure
                     Name = "Denim Jeans",
                     Description = "Classic denim jeans.",
                     Price = 49.50m,
-                    StockQuantity = 50,
-                    Size = "32",
                     Color = "Blue",
                     ImageUrl = "",
                     CategoryId = cat1,
@@ -223,8 +268,6 @@ namespace Infrastructure
                     Name = "Summer Dress",
                     Description = "Light summer dress.",
                     Price = 39.99m,
-                    StockQuantity = 40,
-                    Size = "S",
                     Color = "Red",
                     ImageUrl = "",
                     CategoryId = cat2,
@@ -236,8 +279,6 @@ namespace Infrastructure
                     Name = "Heels",
                     Description = "Comfortable heels.",
                     Price = 59.99m,
-                    StockQuantity = 25,
-                    Size = "38",
                     Color = "Black",
                     ImageUrl = "",
                     CategoryId = cat2,
@@ -249,8 +290,6 @@ namespace Infrastructure
                     Name = "Baseball Cap",
                     Description = "Stylish cap.",
                     Price = 14.00m,
-                    StockQuantity = 200,
-                    Size = "One Size",
                     Color = "Navy",
                     ImageUrl = "",
                     CategoryId = cat3,
@@ -262,8 +301,6 @@ namespace Infrastructure
                     Name = "Leather Belt",
                     Description = "Genuine leather belt.",
                     Price = 25.00m,
-                    StockQuantity = 80,
-                    Size = "L",
                     Color = "Brown",
                     ImageUrl = "",
                     CategoryId = cat3,
