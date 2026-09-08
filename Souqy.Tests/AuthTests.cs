@@ -3,6 +3,7 @@ using Application.Features.Auth.Service;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Souqy.Tests
 {
@@ -37,7 +38,7 @@ namespace Souqy.Tests
             // Arrange
             var context = GetDbContext();
             var config = GetConfiguration();
-            var service = new AuthService(context, config);
+            var service = new AuthService(context, config, NullLogger<AuthService>.Instance);
 
             var dto = new RegisterDto
             {
@@ -64,7 +65,7 @@ namespace Souqy.Tests
             // Arrange
             var context = GetDbContext();
             var config = GetConfiguration();
-            var service = new AuthService(context, config);
+            var service = new AuthService(context, config, NullLogger<AuthService>.Instance);
 
             var dto = new RegisterDto
             {
@@ -93,7 +94,7 @@ namespace Souqy.Tests
             // Arrange
             var context = GetDbContext();
             var config = GetConfiguration();
-            var service = new AuthService(context, config);
+            var service = new AuthService(context, config, NullLogger<AuthService>.Instance);
 
             await service.RegisterAsync(new RegisterDto
             {
@@ -122,7 +123,7 @@ namespace Souqy.Tests
             // Arrange
             var context = GetDbContext();
             var config = GetConfiguration();
-            var service = new AuthService(context, config);
+            var service = new AuthService(context, config, NullLogger<AuthService>.Instance);
 
             await service.RegisterAsync(new RegisterDto
             {

@@ -1,9 +1,13 @@
 using Application;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Souqy.Middleware;
+using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets(userSecretsId: "923bec48-b0c6-4f59-81cb-818b30197022");
@@ -70,6 +74,35 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
+// Rate limiting (built into the ASP.NET Core shared framework).
+// Policies are opt-in per endpoint via [EnableRateLimiting("...")]. Each partition
+// is keyed by the authenticated user id when present, otherwise the client IP, so
+// one abusive caller can't lock out everyone behind the same NAT for long.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    // Brute-force protection for credential endpoints.
+    options.AddPolicy("auth", http => PartitionFactory(PartitionKey(http), permitLimit: 5));
+
+    // Abuse protection for checkout.
+    options.AddPolicy("checkout", http => PartitionFactory(PartitionKey(http), permitLimit: 10));
+
+    options.OnRejected = async (context, token) =>
+    {
+        var retryAfter = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var ra)
+            ? (int)ra.TotalSeconds
+            : 60;
+        context.HttpContext.Response.Headers.RetryAfter = retryAfter.ToString();
+        context.HttpContext.Response.ContentType = "application/json";
+        await context.HttpContext.Response.WriteAsync(JsonSerializer.Serialize(new
+        {
+            statusCode = StatusCodes.Status429TooManyRequests,
+            message = "Too many requests. Please wait a moment and try again."
+        }), token);
+    };
+});
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -99,8 +132,25 @@ app.UseHttpsRedirection();
 // Apply the CORS policy before authorization so preflight requests are handled.
 app.UseCors("AllowFrontend");
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.MapControllers();
 
 app.Run();
+
+static string PartitionKey(HttpContext http) =>
+    http.User.FindFirstValue(ClaimTypes.NameIdentifier)
+    ?? http.Connection.RemoteIpAddress?.ToString()
+    ?? "unknown";
+
+static RateLimitPartition<string> PartitionFactory(string key, int permitLimit) =>
+    RateLimitPartition.GetFixedWindowLimiter(key, _ => new FixedWindowRateLimiterOptions
+    {
+        PermitLimit = permitLimit,
+        Window = TimeSpan.FromMinutes(1),
+        QueueLimit = 0,
+        QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+    });

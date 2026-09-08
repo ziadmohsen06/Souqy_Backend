@@ -3,6 +3,7 @@ using Application.Features.Cart.Service;
 using Domain.Entities;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Souqy.Tests
 {
@@ -21,7 +22,7 @@ namespace Souqy.Tests
         {
             // Arrange
             var context = GetDbContext();
-            var service = new CartService(context);
+            var service = new CartService(context, NullLogger<CartService>.Instance);
 
             var categoryId = Guid.NewGuid();
             var product = new Product
@@ -73,7 +74,7 @@ namespace Souqy.Tests
         {
             // Arrange
             var context = GetDbContext();
-            var service = new CartService(context);
+            var service = new CartService(context, NullLogger<CartService>.Instance);
 
             var product = new Product
             {
@@ -113,7 +114,7 @@ namespace Souqy.Tests
         {
             // Arrange
             var context = GetDbContext();
-            var service = new CartService(context);
+            var service = new CartService(context, NullLogger<CartService>.Instance);
 
             var product = new Product { Id = Guid.NewGuid(), Name = "Hat", Price = 15m, CategoryId = Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
             var variant = new ProductVariant { Id = Guid.NewGuid(), ProductId = product.Id, Color = "Black", StockQuantity = 20 };
@@ -138,7 +139,7 @@ namespace Souqy.Tests
         {
             // Arrange
             var context = GetDbContext();
-            var service = new CartService(context);
+            var service = new CartService(context, NullLogger<CartService>.Instance);
 
             var product = new Product { Id = Guid.NewGuid(), Name = "Jacket", Price = 120m, CategoryId = Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
             var variant = new ProductVariant { Id = Guid.NewGuid(), ProductId = product.Id, Color = "Green", StockQuantity = 10 };

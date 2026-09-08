@@ -2,16 +2,19 @@ using Application.Features.Orders.DTOs;
 using Domain.Entities;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Features.Orders.Service
 {
     public class OrderService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<OrderService> _logger;
 
-        public OrderService(ApplicationDbContext context)
+        public OrderService(ApplicationDbContext context, ILogger<OrderService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<OrderDto> CreateOrderAsync(Guid userId, CreateOrderDto dto)
@@ -27,6 +30,9 @@ namespace Application.Features.Orders.Service
 
             if (existingOrder != null)
             {
+                _logger.LogInformation(
+                    "Idempotent order create: returning existing order {OrderId} for user {UserId} (key {IdempotencyKey}).",
+                    existingOrder.Id, userId, idempotencyKey);
                 return MapToDto(existingOrder);
             }
 
@@ -49,6 +55,9 @@ namespace Application.Features.Orders.Service
                     var variant = product.Variants.FirstOrDefault();
                     if (variant != null && variant.StockQuantity < itemDto.Quantity)
                     {
+                        _logger.LogWarning(
+                            "Order create failed for user {UserId}: insufficient stock for variant {VariantId} ('{ProductName}'). Requested {Requested}, available {Available}.",
+                            userId, variant.Id, product.Name, itemDto.Quantity, variant.StockQuantity);
                         throw new InvalidOperationException($"Insufficient stock for product '{product.Name}'. Available: {variant.StockQuantity}");
                     }
 
@@ -89,6 +98,9 @@ namespace Application.Features.Orders.Service
                     var variant = await _context.ProductVariants.FindAsync(cartItem.ProductVariantId);
                     if (variant != null && variant.StockQuantity < cartItem.Quantity)
                     {
+                        _logger.LogWarning(
+                            "Checkout failed for user {UserId}: insufficient stock for variant {VariantId} ('{ProductName}'). Requested {Requested}, available {Available}.",
+                            userId, variant.Id, cartItem.ProductName, cartItem.Quantity, variant.StockQuantity);
                         throw new InvalidOperationException($"Insufficient stock for product '{cartItem.ProductName}' ({cartItem.Color}). Available: {variant.StockQuantity}");
                     }
 
@@ -123,15 +135,46 @@ namespace Application.Features.Orders.Service
                 Id = Guid.NewGuid(),
                 UserId = userId,
                 IdempotencyKey = idempotencyKey,
-                Status = OrderStatus.PendingPayment.ToString(),
+                // Must match CK_Orders_Status ('Pending','Paid','Failed','Cancelled').
+                Status = "Pending",
                 TotalAmount = totalAmount,
                 ShippingAddress = dto.ShippingAddress,
                 CreatedAt = DateTime.UtcNow,
                 Items = orderItems
             };
 
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Orders.Add(order);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                // Two requests with the same IdempotencyKey raced past the existence
+                // check above; the unique index on Orders.IdempotencyKey rejected this
+                // one. The other request won - return its order instead of failing.
+                _context.ChangeTracker.Clear();
+
+                Order? winner = null;
+                for (var attempt = 0; attempt < 3 && winner == null; attempt++)
+                {
+                    winner = await _context.Orders
+                        .Include(o => o.Items)
+                        .FirstOrDefaultAsync(o => o.UserId == userId && o.IdempotencyKey == idempotencyKey);
+                    if (winner == null) await Task.Delay(50);
+                }
+
+                if (winner == null) throw;
+
+                _logger.LogInformation(
+                    "Concurrent idempotent order create for user {UserId} (key {IdempotencyKey}); returning winning order {OrderId}.",
+                    userId, idempotencyKey, winner.Id);
+                return MapToDto(winner);
+            }
+
+            _logger.LogInformation(
+                "Order {OrderId} created for user {UserId}: {ItemCount} item(s), total {TotalAmount}.",
+                order.Id, userId, order.Items.Count, order.TotalAmount);
 
             return MapToDto(order);
         }

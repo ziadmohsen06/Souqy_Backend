@@ -11,7 +11,10 @@ namespace Infrastructure
             var configPath = Path.Combine(Directory.GetCurrentDirectory(), "../Souqy-Backend");
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(configPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                // appsettings*.json are gitignored in this repo; the connection string
+                // is expected to come from user secrets or environment variables, so
+                // treat the JSON files as optional for design-time tooling.
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
                 // The connection string lives in the Souqy-Backend user secrets
                 // (ConnectionStrings:DefaultConnection); load them so design-time

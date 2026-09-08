@@ -30,12 +30,12 @@ namespace Infrastructure.Products
 
         public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken ct = default)
         {
-            return await _db.Products.AsNoTracking().ToListAsync(ct);
+            return await _db.Products.AsNoTracking().Include(p => p.Variants).ToListAsync(ct);
         }
 
         public async Task<Product?> GetByIdAsync(Guid id, CancellationToken ct = default)
         {
-            return await _db.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id, ct);
+            return await _db.Products.AsNoTracking().Include(p => p.Variants).FirstOrDefaultAsync(p => p.Id == id, ct);
         }
 
         public async Task UpdateAsync(Product product, CancellationToken ct = default)
