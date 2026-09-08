@@ -30,7 +30,8 @@ namespace Infrastructure
 
             modelBuilder.Entity<ProductVariant>(entity =>
             {
-                entity.ToTable("ProductVariants");
+                entity.ToTable("ProductVariants", t =>
+                    t.HasCheckConstraint("CK_ProductVariants_StockQuantity", "\"StockQuantity\" >= 0"));
                 entity.HasKey(v => v.Id);
                 entity.Property(v => v.Id).HasDefaultValueSql("gen_random_uuid()");
 
@@ -62,17 +63,15 @@ namespace Infrastructure
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ProductVariants_Products");
 
-                entity.HasCheckConstraint("CK_ProductVariants_StockQuantity", "\"StockQuantity\" >= 0");
-                // A product/colour can now carry several size rows, each with its own
-                // stock — uniqueness is on the (product, colour, size) triple.
-                entity.HasIndex(v => new { v.ProductId, v.Color, v.Size })
+                entity.HasIndex(v => new { v.ProductId, v.Color })
                     .IsUnique()
                     .HasDatabaseName("UQ_ProductVariants_Product_Color_Size");
             });
             // USERS
             modelBuilder.Entity<User>(b =>
             {
-                b.ToTable("Users");
+                b.ToTable("Users", t =>
+                    t.HasCheckConstraint("CK_Users_Role", "\"Role\" IN ('Customer','Admin')"));
                 b.HasKey(u => u.Id);
                 b.Property(u => u.Id).HasDefaultValueSql("gen_random_uuid()");
                 b.Property(u => u.FullName).HasMaxLength(100).IsRequired().HasColumnName("FullName");
@@ -81,7 +80,6 @@ namespace Infrastructure
                 b.Property(u => u.PasswordHash).HasMaxLength(255).IsRequired().HasColumnName("PasswordHash");
                 b.Property(u => u.Role).HasMaxLength(20).IsRequired().HasDefaultValue("Customer").HasColumnName("Role");
                 b.Property(u => u.CreatedAt).HasColumnType("timestamptz").HasDefaultValueSql("CURRENT_TIMESTAMP").HasColumnName("CreatedAt");
-                b.HasCheckConstraint("CK_Users_Role", "\"Role\" IN ('Customer','Admin')");
             });
 
             // CATEGORIES
@@ -98,7 +96,8 @@ namespace Infrastructure
             // PRODUCTS
             modelBuilder.Entity<Product>(b =>
             {
-                b.ToTable("Products");
+                b.ToTable("Products", t =>
+                    t.HasCheckConstraint("CK_Products_Price", "\"Price\" >= 0"));
                 b.HasKey(p => p.Id);
                 b.Property(p => p.Id).HasDefaultValueSql("gen_random_uuid()");
                 b.Property(p => p.Name).HasMaxLength(150).IsRequired().HasColumnName("Name");
@@ -111,8 +110,6 @@ namespace Infrastructure
                 b.Property(p => p.Embedding)
                  .HasColumnType("text")
                  .HasColumnName("Embedding");
-
-                b.HasCheckConstraint("CK_Products_Price", "\"Price\" >= 0");
 
                 b.HasOne(p => p.Category)
                  .WithMany(c => c.Products)
@@ -144,7 +141,8 @@ namespace Infrastructure
             // CART ITEMS
             modelBuilder.Entity<CartItem>(b =>
             {
-                b.ToTable("CartItems");
+                b.ToTable("CartItems", t =>
+                    t.HasCheckConstraint("CK_CartItems_Quantity", "\"Quantity\" > 0"));
                 b.HasKey(ci => ci.Id);
                 b.Property(ci => ci.Id).HasDefaultValueSql("gen_random_uuid()");
                 b.Property(ci => ci.CartId).IsRequired().HasColumnName("CartId");
@@ -155,8 +153,6 @@ namespace Infrastructure
                 b.Property(ci => ci.ColorImageUrl).HasMaxLength(500).HasColumnName("ColorImageUrl");
                 b.Property(ci => ci.UnitPrice).HasColumnType("numeric(10,2)").IsRequired().HasColumnName("UnitPrice");
                 b.Property(ci => ci.Quantity).IsRequired().HasColumnName("Quantity");
-
-                b.HasCheckConstraint("CK_CartItems_Quantity", "\"Quantity\" > 0");
 
                 b.HasOne(ci => ci.Cart)
                  .WithMany(c => c.Items)
@@ -183,7 +179,11 @@ namespace Infrastructure
             // ORDERS
             modelBuilder.Entity<Order>(b =>
             {
-                b.ToTable("Orders");
+                b.ToTable("Orders", t =>
+                {
+                    t.HasCheckConstraint("CK_Orders_Status", "\"Status\" IN ('Pending','Paid','Failed','Cancelled')");
+                    t.HasCheckConstraint("CK_Orders_TotalAmount", "\"TotalAmount\" >= 0");
+                });
                 b.HasKey(o => o.Id);
                 b.Property(o => o.Id).HasDefaultValueSql("gen_random_uuid()");
                 b.Property(o => o.UserId).IsRequired().HasColumnName("UserId");
@@ -193,9 +193,6 @@ namespace Infrastructure
                 b.Property(o => o.TotalAmount).HasColumnType("numeric(10,2)").IsRequired().HasDefaultValue(0).HasColumnName("TotalAmount");
                 b.Property(o => o.ShippingAddress).HasMaxLength(500).IsRequired().HasColumnName("ShippingAddress");
                 b.Property(o => o.CreatedAt).HasColumnType("timestamptz").HasDefaultValueSql("CURRENT_TIMESTAMP").HasColumnName("CreatedAt");
-
-                b.HasCheckConstraint("CK_Orders_Status", "\"Status\" IN ('Pending','Paid','Failed','Cancelled')");
-                b.HasCheckConstraint("CK_Orders_TotalAmount", "\"TotalAmount\" >= 0");
 
                 b.HasOne(o => o.User)
                  .WithMany(u => u.Orders)
@@ -210,7 +207,11 @@ namespace Infrastructure
             // ORDER ITEMS
             modelBuilder.Entity<OrderItem>(b =>
             {
-                b.ToTable("OrderItems");
+                b.ToTable("OrderItems", t =>
+                {
+                    t.HasCheckConstraint("CK_OrderItems_UnitPrice", "\"UnitPrice\" >= 0");
+                    t.HasCheckConstraint("CK_OrderItems_Quantity", "\"Quantity\" > 0");
+                });
                 b.HasKey(oi => oi.Id);
                 b.Property(oi => oi.Id).HasDefaultValueSql("gen_random_uuid()");
                 b.Property(oi => oi.OrderId).IsRequired().HasColumnName("OrderId");
@@ -219,9 +220,6 @@ namespace Infrastructure
                 b.Property(oi => oi.Color).HasMaxLength(50).HasColumnName("Color");
                 b.Property(oi => oi.UnitPrice).HasColumnType("numeric(10,2)").IsRequired().HasColumnName("UnitPrice");
                 b.Property(oi => oi.Quantity).IsRequired().HasColumnName("Quantity");
-
-                b.HasCheckConstraint("CK_OrderItems_UnitPrice", "\"UnitPrice\" >= 0");
-                b.HasCheckConstraint("CK_OrderItems_Quantity", "\"Quantity\" > 0");
 
                 b.HasOne(oi => oi.Order)
                  .WithMany(o => o.Items)
