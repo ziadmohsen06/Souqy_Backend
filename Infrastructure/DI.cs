@@ -1,3 +1,4 @@
+using System;
 using Infrastructure.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -9,8 +10,21 @@ namespace Infrastructure
 {
     public static class DI
     {
-        public static IServiceCollection ConfigureServices(this IServiceCollection services)
+        public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfiguration configuration)
         {
+            // Read connection string from provided configuration (appsettings/user-secrets/env).
+            var conn = configuration.GetConnectionString("DefaultConnection")
+                       ?? configuration["ConnectionStrings:DefaultConnection"]
+                       ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+                       ?? Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
+
+            if (string.IsNullOrWhiteSpace(conn))
+            {
+                // No DB configured: register in-memory repositories so the API works without Postgres.
+                services.AddScoped<IProductRepository, InMemoryProductRepository>();
+                services.AddScoped<ICategoryRepository, InMemoryCategoryRepository>();
+            }
+            else
             // 1. Register the Python AI Service as a Singleton (no AddHttpClient needed)
             services.AddSingleton<IEmbeddingService, PythonAiService>();
 
@@ -18,12 +32,15 @@ namespace Infrastructure
             // register DbContext using connection string from configuration
             services.AddDbContext<ApplicationDbContext>((provider, options) =>
             {
-                var configuration = provider.GetRequiredService<IConfiguration>();
-                var conn = configuration.GetConnectionString("DefaultConnection")
-                           ?? configuration["ConnectionStrings:DefaultConnection"];
-                options.UseNpgsql(conn);
-            });
+                // Register DbContext and EF repositories when connection string is present.
+                services.AddDbContext<ApplicationDbContext>((provider, options) =>
+                {
+                    options.UseNpgsql(conn);
+                });
 
+                services.AddScoped<IProductRepository, EfProductRepository>();
+                services.AddScoped<ICategoryRepository, EfCategoryRepository>();
+            }
 
             // Register EF repositories (scoped)
             services.AddScoped<IProductRepository, EfProductRepository>();
