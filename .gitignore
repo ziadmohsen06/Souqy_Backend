@@ -3,3 +3,10 @@ obj/
 .vs/
 *.user
 appsettings.Development.json
+appsettings.json
+
+# Python
+venv/
+__pycache__/
+*.pyc
+.env

@@ -14,5 +14,7 @@ namespace Domain.Entities
         // Navigation
         public Cart? Cart { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<IdempotencyRecord> IdempotencyRecords { get; set; } = new List<IdempotencyRecord>();
+
     }
 }

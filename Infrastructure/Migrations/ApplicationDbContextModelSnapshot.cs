@@ -17,7 +17,7 @@ namespace Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.4")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -64,22 +64,49 @@ namespace Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("CartId");
 
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("Color");
+
+                    b.Property<string>("ColorImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("ColorImageUrl");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid")
                         .HasColumnName("ProductId");
 
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)")
+                        .HasColumnName("ProductName");
+
+                    b.Property<Guid>("ProductVariantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ProductVariantId");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("integer")
                         .HasColumnName("Quantity");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric(10,2)")
+                        .HasColumnName("UnitPrice");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId")
                         .HasDatabaseName("IX_CartItems_ProductId");
 
-                    b.HasIndex("CartId", "ProductId")
+                    b.HasIndex("ProductVariantId");
+
+                    b.HasIndex("CartId", "ProductVariantId")
                         .IsUnique()
-                        .HasDatabaseName("UQ_CartItems_Cart_Product");
+                        .HasDatabaseName("UQ_CartItems_Cart_ProductVariant");
 
                     b.ToTable("CartItems", null, t =>
                         {
@@ -202,6 +229,11 @@ namespace Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<string>("Color")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("Color");
+
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid")
                         .HasColumnName("OrderId");
@@ -266,6 +298,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("Description");
 
+                    b.Property<string>("Embedding")
+                        .HasColumnType("text")
+                        .HasColumnName("Embedding");
+
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
@@ -281,17 +317,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("numeric(10,2)")
                         .HasColumnName("Price");
 
-                    b.Property<string>("Size")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)")
-                        .HasColumnName("Size");
-
-                    b.Property<int>("StockQuantity")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("StockQuantity");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId")
@@ -300,8 +325,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("Products", null, t =>
                         {
                             t.HasCheckConstraint("CK_Products_Price", "\"Price\" >= 0");
-
-                            t.HasCheckConstraint("CK_Products_StockQuantity", "\"StockQuantity\" >= 0");
                         });
 
                     b.HasData(
@@ -314,9 +337,7 @@ namespace Infrastructure.Migrations
                             Description = "A comfortable classic tee.",
                             ImageUrl = "",
                             Name = "Classic T-Shirt",
-                            Price = 12.99m,
-                            Size = "M",
-                            StockQuantity = 100
+                            Price = 12.99m
                         },
                         new
                         {
@@ -327,9 +348,7 @@ namespace Infrastructure.Migrations
                             Description = "Classic denim jeans.",
                             ImageUrl = "",
                             Name = "Denim Jeans",
-                            Price = 49.50m,
-                            Size = "32",
-                            StockQuantity = 50
+                            Price = 49.50m
                         },
                         new
                         {
@@ -340,9 +359,7 @@ namespace Infrastructure.Migrations
                             Description = "Light summer dress.",
                             ImageUrl = "",
                             Name = "Summer Dress",
-                            Price = 39.99m,
-                            Size = "S",
-                            StockQuantity = 40
+                            Price = 39.99m
                         },
                         new
                         {
@@ -353,9 +370,7 @@ namespace Infrastructure.Migrations
                             Description = "Comfortable heels.",
                             ImageUrl = "",
                             Name = "Heels",
-                            Price = 59.99m,
-                            Size = "38",
-                            StockQuantity = 25
+                            Price = 59.99m
                         },
                         new
                         {
@@ -366,9 +381,7 @@ namespace Infrastructure.Migrations
                             Description = "Stylish cap.",
                             ImageUrl = "",
                             Name = "Baseball Cap",
-                            Price = 14.00m,
-                            Size = "One Size",
-                            StockQuantity = 200
+                            Price = 14.00m
                         },
                         new
                         {
@@ -379,9 +392,51 @@ namespace Infrastructure.Migrations
                             Description = "Genuine leather belt.",
                             ImageUrl = "",
                             Name = "Leather Belt",
-                            Price = 25.00m,
-                            Size = "L",
-                            StockQuantity = 80
+                            Price = 25.00m
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Entities.ProductVariant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("Color");
+
+                    b.Property<string>("ColorImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("ColorImageUrl");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ProductId");
+
+                    b.Property<string>("Size")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("Size");
+
+                    b.Property<int>("StockQuantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("StockQuantity");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId", "Color")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_ProductVariants_Product_Color");
+
+                    b.ToTable("ProductVariants", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ProductVariants_StockQuantity", "\"StockQuantity\" >= 0");
                         });
                 });
 
@@ -463,9 +518,18 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_CartItems_Products");
 
+                    b.HasOne("Domain.Entities.ProductVariant", "ProductVariant")
+                        .WithMany()
+                        .HasForeignKey("ProductVariantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_CartItems_ProductVariants");
+
                     b.Navigation("Cart");
 
                     b.Navigation("Product");
+
+                    b.Navigation("ProductVariant");
                 });
 
             modelBuilder.Entity("Domain.Entities.Order", b =>
@@ -512,6 +576,18 @@ namespace Infrastructure.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ProductVariant", b =>
+                {
+                    b.HasOne("Domain.Entities.Product", "Product")
+                        .WithMany("Variants")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ProductVariants_Products");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Domain.Entities.Cart", b =>
                 {
                     b.Navigation("Items");
@@ -532,6 +608,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("CartItems");
 
                     b.Navigation("OrderItems");
+
+                    b.Navigation("Variants");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>

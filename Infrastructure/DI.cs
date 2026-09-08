@@ -3,6 +3,8 @@ using Infrastructure.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Infrastructure.Services;
+
 
 namespace Infrastructure
 {
@@ -23,6 +25,12 @@ namespace Infrastructure
                 services.AddScoped<ICategoryRepository, InMemoryCategoryRepository>();
             }
             else
+            // 1. Register the Python AI Service as a Singleton (no AddHttpClient needed)
+            services.AddSingleton<IEmbeddingService, PythonAiService>();
+
+
+            // register DbContext using connection string from configuration
+            services.AddDbContext<ApplicationDbContext>((provider, options) =>
             {
                 // Register DbContext and EF repositories when connection string is present.
                 services.AddDbContext<ApplicationDbContext>((provider, options) =>
@@ -34,7 +42,12 @@ namespace Infrastructure
                 services.AddScoped<ICategoryRepository, EfCategoryRepository>();
             }
 
+            // Register EF repositories (scoped)
+            services.AddScoped<IProductRepository, EfProductRepository>();
+            services.AddScoped<ICategoryRepository, EfCategoryRepository>();
+
             return services;
         }
     }
 }
+                

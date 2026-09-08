@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
-using Application.Features.Products.Services;
 using Application.Features.Products.DTOs;
+using Application.Features.Products.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Souqy.Controllers
 {
@@ -16,6 +17,7 @@ namespace Souqy.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] Guid? categoryId = null, CancellationToken ct = default)
         {
             var result = await _service.GetPagedAsync(page <= 0 ? 1 : page, pageSize <= 0 ? 20 : pageSize, categoryId, ct);
@@ -23,6 +25,7 @@ namespace Souqy.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetById(Guid id, CancellationToken ct = default)
         {
             var dto = await _service.GetByIdAsync(id, ct);
@@ -31,6 +34,7 @@ namespace Souqy.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Create([FromBody] CreateProductDto input, CancellationToken ct = default)
         {
             var created = await _service.CreateAsync(input, ct);
@@ -38,6 +42,7 @@ namespace Souqy.Controllers
         }
 
         [HttpPut("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Update(Guid id, [FromBody] UpdateProductDto update, CancellationToken ct = default)
         {
             await _service.UpdateAsync(id, update, ct);
@@ -45,10 +50,18 @@ namespace Souqy.Controllers
         }
 
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken ct = default)
         {
             await _service.DeleteAsync(id, ct);
             return NoContent();
+        }
+
+        [HttpGet("{id:guid}/recommendations")]
+        public async Task<ActionResult<IEnumerable<RecommendationDto>>> GetRecommendations(Guid id, [FromQuery] int count = 4, CancellationToken ct = default)
+        {
+            var recommendations = await _service.GetRecommendationsAsync(id, count, ct);
+            return Ok(recommendations);
         }
     }
 }

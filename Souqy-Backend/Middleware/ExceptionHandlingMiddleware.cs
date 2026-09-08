@@ -28,6 +28,7 @@ namespace Souqy.Middleware
         {
             int status = ex switch
             {
+                KeyNotFoundException => (int)HttpStatusCode.NotFound,
                 InvalidOperationException => (int)HttpStatusCode.BadRequest,
                 _ => (int)HttpStatusCode.InternalServerError
             };
