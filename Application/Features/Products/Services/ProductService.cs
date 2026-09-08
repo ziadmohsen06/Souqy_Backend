@@ -110,12 +110,34 @@ namespace Application.Features.Products.Services
 
         public async Task<IEnumerable<RecommendationDto>> GetRecommendationsAsync(Guid productId, int count = 4, CancellationToken ct = default)
         {
-            // 1. Get the raw JSON string from Infrastructure
+            // 1. The Python service returns candidate ids + cosine similarity scores.
             var jsonString = await _embeddingService.GetRecommendationsJsonAsync(productId, count);
-            
-            // 2. Deserialize it here in Application where the DTO lives
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            return JsonSerializer.Deserialize<List<RecommendationDto>>(jsonString, options) ?? new List<RecommendationDto>();
+            var scored = JsonSerializer.Deserialize<List<RecommendationDto>>(jsonString, options)
+                         ?? new List<RecommendationDto>();
+
+            // 2. Re-hydrate each candidate from our own DB so the response carries the
+            //    canonical Name / Description / Price / ImageUrl (and correct encoding),
+            //    keeping only the SimilarityScore from Python. Drop any product that no
+            //    longer exists.
+            var result = new List<RecommendationDto>();
+            foreach (var s in scored)
+            {
+                var product = await _repository.GetByIdAsync(s.Id, ct);
+                if (product is null) continue;
+
+                result.Add(new RecommendationDto
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price,
+                    ImageUrl = product.ImageUrl,
+                    SimilarityScore = s.SimilarityScore
+                });
+            }
+
+            return result;
         }
     }
 }
