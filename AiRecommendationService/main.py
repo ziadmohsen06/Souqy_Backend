@@ -43,6 +43,7 @@ class ProductRecommendation(BaseModel):
     Id: str
     Name: str
     Description: str | None
+    ImageUrl: str | None = None
     Price: float
     SimilarityScore: float
 
@@ -73,13 +74,17 @@ async def get_recommendations(product_id: str, limit: int = 4):
         
         if not target:
             conn.close()
-            raise HTTPException(status_code=404, detail="Product not found")
+            print(f"[AI Service] 404: Product {product_id} not found in database.")
+            return [] # Return empty instead of crashing frontend
+            # raise HTTPException(status_code=404, detail="Product not found")
         
         target_id, target_name, target_desc, target_price, target_embedding_raw = target
         
         if target_embedding_raw is None:
             conn.close()
-            raise HTTPException(status_code=400, detail="Product has no embedding")
+            print(f"[AI Service] 400: Product '{target_name}' ({product_id}) has NO embedding. Falling back to empty.")
+            return [] # This is why seeded products return empty now
+            # raise HTTPException(status_code=400, detail="Product has no embedding")
         
         # Parse embedding
         if isinstance(target_embedding_raw, str):
@@ -87,7 +92,7 @@ async def get_recommendations(product_id: str, limit: int = 4):
         else:
             target_embedding = target_embedding_raw
         
-        # 🌟 DEBUG: Print the target embedding 🌟
+        # DEBUG: Print the target embedding 
         print(f"\n=== DEBUG INFO ===")
         print(f"Target Product: {target_name}")
         print(f"Target Embedding Type: {type(target_embedding)}")
@@ -96,7 +101,7 @@ async def get_recommendations(product_id: str, limit: int = 4):
         print(f"Target Embedding Sample (raw): {str(target_embedding_raw)[:100]}")
         
         cursor.execute(
-            """SELECT "Id", "Name", "Description", "Price", "Embedding" 
+            """SELECT "Id", "Name", "Description", "Price", "ImageUrl", "Embedding" 
                FROM "Products" 
                WHERE "Embedding" IS NOT NULL AND "Id" != %s""",
             (product_id,)
@@ -105,13 +110,14 @@ async def get_recommendations(product_id: str, limit: int = 4):
         conn.close()
         
         if not candidates:
+            print(f"[AI Service] 400: No candidates found for product {product_id}. Returning empty list.")
             return []
         
         valid_candidates = []
         candidate_vectors = []
         
         for c in candidates:
-            raw_emb = c[4]
+            raw_emb = c[5]
             if raw_emb is not None:
                 try:
                     if isinstance(raw_emb, str):
@@ -126,9 +132,10 @@ async def get_recommendations(product_id: str, limit: int = 4):
                     continue
         
         if not candidate_vectors:
+            print(f"[AI Service] 400: No valid candidate embeddings found for product {product_id}. Returning empty list.")
             return []
         
-        # 🌟 DEBUG: Print candidate embeddings 🌟
+        # DEBUG: Print candidate embeddings 
         print(f"\nCandidate Count: {len(candidate_vectors)}")
         if candidate_vectors:
             print(f"First Candidate: {valid_candidates[0][1]}")
@@ -139,7 +146,7 @@ async def get_recommendations(product_id: str, limit: int = 4):
         target_vector = [target_embedding]
         similarities = cosine_similarity(target_vector, candidate_vectors)[0]
         
-        # 🌟 DEBUG: Print similarity scores 🌟
+        # DEBUG: Print similarity scores 
         print(f"\nSimilarity Scores: {similarities}")
         print(f"===================\n")
         
@@ -150,16 +157,27 @@ async def get_recommendations(product_id: str, limit: int = 4):
                 Name=candidate[1],
                 Description=candidate[2],
                 Price=float(candidate[3]),
+                ImageUrl=candidate[4],
                 SimilarityScore=float(similarities[i])
             ))
         
         recommendations.sort(key=lambda x: x.SimilarityScore, reverse=True)
+        
+                # Print the final recommendations for DEBUGGING purposes
+        print(f"\n[AI Service] Returning {len(recommendations[:limit])} recommendations:")
+        for i, rec in enumerate(recommendations[:limit], 1):
+            print(f"   {i}. {rec.Name} (Score: {rec.SimilarityScore:.3f}), (image: {rec.ImageUrl})")
+        print()
+        
+        
         return recommendations[:limit]
         
     except HTTPException:
         raise
     except Exception as e:
-        print(f"CRITICAL PYTHON ERROR: {e}")
+        # This will print the EXACT red error traceback to your terminal
+        print(f"[AI Service] 500: CRITICAL ERROR for product {product_id}")
+        print(f"   Reason: {str(e)}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error getting recommendations: {str(e)}")
