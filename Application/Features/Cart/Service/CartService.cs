@@ -2,6 +2,7 @@ using Application.Features.Cart.DTOs;
 using Domain.Entities;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using CartEntity = Domain.Entities.Cart;
 
 namespace Application.Features.Cart.Service
@@ -9,10 +10,12 @@ namespace Application.Features.Cart.Service
     public class CartService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<CartService> _logger;
 
-        public CartService(ApplicationDbContext context)
+        public CartService(ApplicationDbContext context, ILogger<CartService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         private async Task<CartEntity> GetOrCreateCartAsync(Guid userId)
@@ -115,6 +118,10 @@ namespace Application.Features.Cart.Service
 
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation(
+                "Cart add for user {UserId}: variant {VariantId} x{Quantity}.",
+                userId, dto.ProductVariantId, dto.Quantity);
+
             var item = await _context.CartItems
                 .FirstOrDefaultAsync(ci => ci.ProductVariantId == dto.ProductVariantId && ci.CartId == cart.Id);
 
@@ -139,11 +146,15 @@ namespace Application.Features.Cart.Service
 
             if (cartItem == null || cartItem.Cart == null || cartItem.Cart.UserId != userId)
             {
+                _logger.LogWarning(
+                    "Cart remove rejected for user {UserId}: cart item {CartItemId} not found or not owned.",
+                    userId, cartItemId);
                 return false;
             }
 
             _context.CartItems.Remove(cartItem);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Cart remove for user {UserId}: cart item {CartItemId}.", userId, cartItemId);
             return true;
         }
 

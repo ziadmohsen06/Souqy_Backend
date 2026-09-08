@@ -3,6 +3,7 @@ using Application.Features.Orders.DTOs;
 using Application.Features.Orders.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Souqy.Controllers
 {
@@ -26,6 +27,7 @@ namespace Souqy.Controllers
         }
 
         [HttpPost]
+        [EnableRateLimiting("checkout")]
         public async Task<ActionResult> Create([FromBody] CreateOrderDto dto)
         {
             var userId = GetCurrentUserId();

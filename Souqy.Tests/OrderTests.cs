@@ -5,6 +5,7 @@ using Application.Features.Orders.Service;
 using Domain.Entities;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Souqy.Tests
 {
@@ -23,8 +24,8 @@ namespace Souqy.Tests
         {
             // Arrange
             var context = GetDbContext();
-            var cartService = new CartService(context);
-            var orderService = new OrderService(context);
+            var cartService = new CartService(context, NullLogger<CartService>.Instance);
+            var orderService = new OrderService(context, NullLogger<OrderService>.Instance);
 
             var product = new Product { Id = Guid.NewGuid(), Name = "Watch", Price = 150m, CategoryId = Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
             var variant = new ProductVariant { Id = Guid.NewGuid(), ProductId = product.Id, Color = "Silver", StockQuantity = 10 };
@@ -66,8 +67,8 @@ namespace Souqy.Tests
         {
             // Arrange
             var context = GetDbContext();
-            var cartService = new CartService(context);
-            var orderService = new OrderService(context);
+            var cartService = new CartService(context, NullLogger<CartService>.Instance);
+            var orderService = new OrderService(context, NullLogger<OrderService>.Instance);
 
             var product = new Product { Id = Guid.NewGuid(), Name = "Backpack", Price = 45m, CategoryId = Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
             var variant = new ProductVariant { Id = Guid.NewGuid(), ProductId = product.Id, Color = "Grey", StockQuantity = 5 };
@@ -107,8 +108,8 @@ namespace Souqy.Tests
         {
             // Arrange
             var context = GetDbContext();
-            var cartService = new CartService(context);
-            var orderService = new OrderService(context);
+            var cartService = new CartService(context, NullLogger<CartService>.Instance);
+            var orderService = new OrderService(context, NullLogger<OrderService>.Instance);
 
             var product = new Product { Id = Guid.NewGuid(), Name = "Sunglasses", Price = 75m, CategoryId = Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
             var variant = new ProductVariant { Id = Guid.NewGuid(), ProductId = product.Id, Color = "Black", StockQuantity = 10 };

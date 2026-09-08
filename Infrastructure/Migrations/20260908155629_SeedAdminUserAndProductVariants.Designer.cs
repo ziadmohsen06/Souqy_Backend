@@ -3,6 +3,7 @@ using System;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260908155629_SeedAdminUserAndProductVariants")]
+    partial class SeedAdminUserAndProductVariants
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -335,7 +338,7 @@ namespace Infrastructure.Migrations
                             Color = "White",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "A comfortable classic tee.",
-                            ImageUrl = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=900&auto=format&fit=crop&q=80",
+                            ImageUrl = "",
                             Name = "Classic T-Shirt",
                             Price = 12.99m
                         },
@@ -346,7 +349,7 @@ namespace Infrastructure.Migrations
                             Color = "Blue",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Classic denim jeans.",
-                            ImageUrl = "https://images.unsplash.com/photo-1542272604-787c3835535d?w=900&auto=format&fit=crop&q=80",
+                            ImageUrl = "",
                             Name = "Denim Jeans",
                             Price = 49.50m
                         },
@@ -357,7 +360,7 @@ namespace Infrastructure.Migrations
                             Color = "Red",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Light summer dress.",
-                            ImageUrl = "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=900&auto=format&fit=crop&q=80",
+                            ImageUrl = "",
                             Name = "Summer Dress",
                             Price = 39.99m
                         },
@@ -368,7 +371,7 @@ namespace Infrastructure.Migrations
                             Color = "Black",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Comfortable heels.",
-                            ImageUrl = "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=900&auto=format&fit=crop&q=80",
+                            ImageUrl = "",
                             Name = "Heels",
                             Price = 59.99m
                         },
@@ -379,7 +382,7 @@ namespace Infrastructure.Migrations
                             Color = "Navy",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Stylish cap.",
-                            ImageUrl = "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=900&auto=format&fit=crop&q=80",
+                            ImageUrl = "",
                             Name = "Baseball Cap",
                             Price = 14.00m
                         },
@@ -390,108 +393,9 @@ namespace Infrastructure.Migrations
                             Color = "Brown",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Genuine leather belt.",
-                            ImageUrl = "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=900&auto=format&fit=crop&q=80",
+                            ImageUrl = "",
                             Name = "Leather Belt",
                             Price = 25.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("20000000-0000-0000-0000-000000000021"),
-                            CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Color = "Oatmeal",
-                            CreatedAt = new DateTime(2025, 9, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Mid-weight extra-fine Merino knit with ribbed trims — warm, breathable and not itchy.",
-                            ImageUrl = "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=900&auto=format&fit=crop&q=80",
-                            Name = "Merino Wool Sweater",
-                            Price = 79.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("20000000-0000-0000-0000-000000000022"),
-                            CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Color = "White",
-                            CreatedAt = new DateTime(2025, 10, 2, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Garment-washed Oxford cotton with a soft roll collar. Wears equally well tucked or open over a tee.",
-                            ImageUrl = "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=900&auto=format&fit=crop&q=80",
-                            Name = "Oxford Button-Down Shirt",
-                            Price = 45.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("20000000-0000-0000-0000-000000000023"),
-                            CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Color = "Khaki",
-                            CreatedAt = new DateTime(2025, 7, 18, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Stretch-cotton twill chinos with a clean tapered leg, reinforced seams and deep front pockets.",
-                            ImageUrl = "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=900&auto=format&fit=crop&q=80",
-                            Name = "Slim Chino Trousers",
-                            Price = 58.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("20000000-0000-0000-0000-000000000024"),
-                            CategoryId = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Color = "Black",
-                            CreatedAt = new DateTime(2026, 1, 12, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Lightweight water-repellent bomber with ribbed cuffs and a matte zip. Layers over knitwear all season.",
-                            ImageUrl = "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=900&auto=format&fit=crop&q=80",
-                            Name = "Bomber Jacket",
-                            Price = 135.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("20000000-0000-0000-0000-000000000025"),
-                            CategoryId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            Color = "Blush",
-                            CreatedAt = new DateTime(2025, 8, 22, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Fluid accordion-pleated midi with an elastic-back waistband for all-day comfort.",
-                            ImageUrl = "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=900&auto=format&fit=crop&q=80",
-                            Name = "Pleated Midi Skirt",
-                            Price = 62.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("20000000-0000-0000-0000-000000000026"),
-                            CategoryId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            Color = "Camel",
-                            CreatedAt = new DateTime(2025, 11, 3, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Half-canvassed single-breasted blazer in Italian wool with natural shoulders and working cuffs.",
-                            ImageUrl = "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=900&auto=format&fit=crop&q=80",
-                            Name = "Tailored Wool Blazer",
-                            Price = 168.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("20000000-0000-0000-0000-000000000027"),
-                            CategoryId = new Guid("22222222-2222-2222-2222-222222222222"),
-                            Color = "Champagne",
-                            CreatedAt = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Bias-cut sandwashed silk slip with adjustable straps and a subtle cowl neck.",
-                            ImageUrl = "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=900&auto=format&fit=crop&q=80",
-                            Name = "Silk Slip Dress",
-                            Price = 115.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("20000000-0000-0000-0000-000000000028"),
-                            CategoryId = new Guid("33333333-3333-3333-3333-333333333333"),
-                            Color = "Grey",
-                            CreatedAt = new DateTime(2025, 10, 20, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Chunky rib-knit lambswool beanie with a fold-over cuff. One size, generous fit.",
-                            ImageUrl = "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=900&auto=format&fit=crop&q=80",
-                            Name = "Ribbed Wool Beanie",
-                            Price = 22.00m
-                        },
-                        new
-                        {
-                            Id = new Guid("20000000-0000-0000-0000-000000000029"),
-                            CategoryId = new Guid("33333333-3333-3333-3333-333333333333"),
-                            Color = "Khaki",
-                            CreatedAt = new DateTime(2025, 6, 14, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Cotton-webbing belt with a brushed-metal box buckle and leather keeper. Trim to fit.",
-                            ImageUrl = "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=900&auto=format&fit=crop&q=80",
-                            Name = "Canvas Web Belt",
-                            Price = 18.00m
                         });
                 });
 
@@ -543,7 +447,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000101"),
                             Color = "White",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000001"),
                             Size = "M",
                             StockQuantity = 60
@@ -552,7 +455,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000102"),
                             Color = "Black",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000001"),
                             Size = "L",
                             StockQuantity = 40
@@ -561,7 +463,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000103"),
                             Color = "Navy",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000001"),
                             Size = "S",
                             StockQuantity = 25
@@ -570,7 +471,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000201"),
                             Color = "Blue",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1542272604-787c3835535d?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000002"),
                             Size = "32",
                             StockQuantity = 50
@@ -579,7 +479,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000202"),
                             Color = "Black",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1542272604-787c3835535d?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000002"),
                             Size = "34",
                             StockQuantity = 20
@@ -588,7 +487,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000301"),
                             Color = "Red",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000003"),
                             Size = "S",
                             StockQuantity = 25
@@ -597,7 +495,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000302"),
                             Color = "Blue",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000003"),
                             Size = "M",
                             StockQuantity = 12
@@ -606,7 +503,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000303"),
                             Color = "Yellow",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000003"),
                             Size = "S",
                             StockQuantity = 8
@@ -615,7 +511,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000401"),
                             Color = "Black",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000004"),
                             Size = "38",
                             StockQuantity = 20
@@ -624,7 +519,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000402"),
                             Color = "Nude",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000004"),
                             Size = "37",
                             StockQuantity = 10
@@ -633,7 +527,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000501"),
                             Color = "Navy",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000005"),
                             Size = "One Size",
                             StockQuantity = 120
@@ -642,7 +535,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000502"),
                             Color = "Black",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000005"),
                             Size = "One Size",
                             StockQuantity = 80
@@ -651,7 +543,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000503"),
                             Color = "Olive",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000005"),
                             Size = "One Size",
                             StockQuantity = 40
@@ -660,7 +551,6 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000601"),
                             Color = "Brown",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000006"),
                             Size = "M",
                             StockQuantity = 50
@@ -669,208 +559,9 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000602"),
                             Color = "Black",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=900&auto=format&fit=crop&q=80",
                             ProductId = new Guid("10000000-0000-0000-0000-000000000006"),
                             Size = "L",
                             StockQuantity = 40
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002101"),
-                            Color = "Oatmeal",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000021"),
-                            Size = "M",
-                            StockQuantity = 30
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002102"),
-                            Color = "Charcoal",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000021"),
-                            Size = "L",
-                            StockQuantity = 18
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002201"),
-                            Color = "White",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000022"),
-                            Size = "M",
-                            StockQuantity = 40
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002202"),
-                            Color = "Sky Blue",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000022"),
-                            Size = "L",
-                            StockQuantity = 25
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002203"),
-                            Color = "Pink",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000022"),
-                            Size = "S",
-                            StockQuantity = 12
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002301"),
-                            Color = "Khaki",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000023"),
-                            Size = "32",
-                            StockQuantity = 22
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002302"),
-                            Color = "Navy",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1542272604-787c3835535d?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000023"),
-                            Size = "34",
-                            StockQuantity = 18
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002303"),
-                            Color = "Olive",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000023"),
-                            Size = "30",
-                            StockQuantity = 10
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002401"),
-                            Color = "Black",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000024"),
-                            Size = "M",
-                            StockQuantity = 12
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002402"),
-                            Color = "Olive",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000024"),
-                            Size = "L",
-                            StockQuantity = 9
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002501"),
-                            Color = "Blush",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000025"),
-                            Size = "S",
-                            StockQuantity = 15
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002502"),
-                            Color = "Black",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000025"),
-                            Size = "M",
-                            StockQuantity = 15
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002601"),
-                            Color = "Camel",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000026"),
-                            Size = "M",
-                            StockQuantity = 8
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002602"),
-                            Color = "Charcoal",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000026"),
-                            Size = "S",
-                            StockQuantity = 6
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002701"),
-                            Color = "Champagne",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000027"),
-                            Size = "S",
-                            StockQuantity = 10
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002702"),
-                            Color = "Emerald",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000027"),
-                            Size = "M",
-                            StockQuantity = 8
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002703"),
-                            Color = "Black",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000027"),
-                            Size = "L",
-                            StockQuantity = 6
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002801"),
-                            Color = "Grey",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000028"),
-                            Size = "One Size",
-                            StockQuantity = 60
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002802"),
-                            Color = "Black",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000028"),
-                            Size = "One Size",
-                            StockQuantity = 45
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002803"),
-                            Color = "Mustard",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000028"),
-                            Size = "One Size",
-                            StockQuantity = 20
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002901"),
-                            Color = "Khaki",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000029"),
-                            Size = "M",
-                            StockQuantity = 40
-                        },
-                        new
-                        {
-                            Id = new Guid("b0000000-0000-0000-0000-000000002902"),
-                            Color = "Navy",
-                            ColorImageUrl = "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=900&auto=format&fit=crop&q=80",
-                            ProductId = new Guid("20000000-0000-0000-0000-000000000029"),
-                            Size = "L",
-                            StockQuantity = 30
                         });
                 });
 
@@ -932,24 +623,6 @@ namespace Infrastructure.Migrations
                             FullName = "Souqy Admin",
                             PasswordHash = "$2a$11$Fk9B2IKFSWmqiZ4/GS/BueBRgv2Qfmyoyvi38gSloHTim10ngWlU2",
                             Role = "Admin"
-                        },
-                        new
-                        {
-                            Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1"),
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "nour@souqy.local",
-                            FullName = "Nour Hassan",
-                            PasswordHash = "$2a$11$FFNhXAkvCy20R2rbAa1mFOetTfdMbfKbb9D0ZVfvAoDRh67qBzxuC",
-                            Role = "Customer"
-                        },
-                        new
-                        {
-                            Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb2"),
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "omar@souqy.local",
-                            FullName = "Omar Khaled",
-                            PasswordHash = "$2a$11$FFNhXAkvCy20R2rbAa1mFOetTfdMbfKbb9D0ZVfvAoDRh67qBzxuC",
-                            Role = "Customer"
                         });
                 });
 

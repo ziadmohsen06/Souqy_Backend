@@ -16,6 +16,7 @@ namespace Application
             services.AddScoped<CartService>();
             services.AddScoped<OrderService>();
             services.AddScoped<ProductService>();
+            services.AddScoped<ProductVariantService>();
             services.AddScoped<CategoryService>();
 
             // Register Mapster mapping configuration (global)

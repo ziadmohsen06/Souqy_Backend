@@ -15,6 +15,9 @@ namespace Application.Mapping
             config.NewConfig<ProductVariant, ColorVariantDto>()
                 .Map(dest => dest.InStock, src => src.StockQuantity > 0);
 
+            // ProductVariant -> ProductVariantDto (InStock is a computed getter)
+            config.NewConfig<ProductVariant, ProductVariantDto>();
+
             // Product -> ProductDto with color variants
             config.NewConfig<Product, ProductDto>()
                 .Map(dest => dest.DefaultColor, src => src.Color)

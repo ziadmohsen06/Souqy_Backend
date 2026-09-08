@@ -243,6 +243,22 @@ namespace Infrastructure
             var cat2 = new Guid("22222222-2222-2222-2222-222222222222");
             var cat3 = new Guid("33333333-3333-3333-3333-333333333333");
 
+            // Real product imagery (free Unsplash stock photos, sized for the grid).
+            static string Img(string id) => $"https://images.unsplash.com/{id}?w=900&auto=format&fit=crop&q=80";
+            const string IMG_TEE = "photo-1521572163474-6864f9cf17ab";
+            const string IMG_SHIRT = "photo-1602810318383-e386cc2a3ccf";
+            const string IMG_SWEATER = "photo-1576871337622-98d48d1cf531";
+            const string IMG_HOODIE = "photo-1556905055-8f358a7a47b2";
+            const string IMG_JEANS = "photo-1542272604-787c3835535d";
+            const string IMG_CHINO = "photo-1624378439575-d8705ad7ae80";
+            const string IMG_JACKET = "photo-1576995853123-5a10305d93c0";
+            const string IMG_BLAZER = "photo-1591047139829-d91aecb6caea";
+            const string IMG_DRESS = "photo-1539109136881-3be0616acf4b";
+            const string IMG_HEELS = "photo-1543163521-1bf539c55dd2";
+            const string IMG_CAP = "photo-1588850561407-ed78c282e89b";
+            const string IMG_BELT = "photo-1624222247344-550fb60583dc";
+            var seedDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = cat1, Name = "Men", Description = "Men's clothing and accessories" },
                 new Category { Id = cat2, Name = "Women", Description = "Women's clothing and accessories" },
@@ -257,9 +273,9 @@ namespace Infrastructure
                     Description = "A comfortable classic tee.",
                     Price = 12.99m,
                     Color = "White",
-                    ImageUrl = "",
+                    ImageUrl = Img(IMG_TEE),
                     CategoryId = cat1,
-                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                    CreatedAt = seedDate
                 },
                 new Product
                 {
@@ -268,9 +284,9 @@ namespace Infrastructure
                     Description = "Classic denim jeans.",
                     Price = 49.50m,
                     Color = "Blue",
-                    ImageUrl = "",
+                    ImageUrl = Img(IMG_JEANS),
                     CategoryId = cat1,
-                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                    CreatedAt = seedDate
                 },
                 new Product
                 {
@@ -279,9 +295,9 @@ namespace Infrastructure
                     Description = "Light summer dress.",
                     Price = 39.99m,
                     Color = "Red",
-                    ImageUrl = "",
+                    ImageUrl = Img(IMG_DRESS),
                     CategoryId = cat2,
-                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                    CreatedAt = seedDate
                 },
                 new Product
                 {
@@ -290,9 +306,9 @@ namespace Infrastructure
                     Description = "Comfortable heels.",
                     Price = 59.99m,
                     Color = "Black",
-                    ImageUrl = "",
+                    ImageUrl = Img(IMG_HEELS),
                     CategoryId = cat2,
-                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                    CreatedAt = seedDate
                 },
                 new Product
                 {
@@ -301,9 +317,9 @@ namespace Infrastructure
                     Description = "Stylish cap.",
                     Price = 14.00m,
                     Color = "Navy",
-                    ImageUrl = "",
+                    ImageUrl = Img(IMG_CAP),
                     CategoryId = cat3,
-                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                    CreatedAt = seedDate
                 },
                 new Product
                 {
@@ -312,10 +328,205 @@ namespace Infrastructure
                     Description = "Genuine leather belt.",
                     Price = 25.00m,
                     Color = "Brown",
-                    ImageUrl = "",
+                    ImageUrl = Img(IMG_BELT),
                     CategoryId = cat3,
-                    CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                    CreatedAt = seedDate
+                },
+
+                // --- Added for the demo: more depth per category ------------------
+                new Product
+                {
+                    Id = new Guid("20000000-0000-0000-0000-000000000021"),
+                    Name = "Merino Wool Sweater",
+                    Description = "Mid-weight extra-fine Merino knit with ribbed trims — warm, breathable and not itchy.",
+                    Price = 79.00m,
+                    Color = "Oatmeal",
+                    ImageUrl = Img(IMG_SWEATER),
+                    CategoryId = cat1,
+                    CreatedAt = new DateTime(2025, 9, 5, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Product
+                {
+                    Id = new Guid("20000000-0000-0000-0000-000000000022"),
+                    Name = "Oxford Button-Down Shirt",
+                    Description = "Garment-washed Oxford cotton with a soft roll collar. Wears equally well tucked or open over a tee.",
+                    Price = 45.00m,
+                    Color = "White",
+                    ImageUrl = Img(IMG_SHIRT),
+                    CategoryId = cat1,
+                    CreatedAt = new DateTime(2025, 10, 2, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Product
+                {
+                    Id = new Guid("20000000-0000-0000-0000-000000000023"),
+                    Name = "Slim Chino Trousers",
+                    Description = "Stretch-cotton twill chinos with a clean tapered leg, reinforced seams and deep front pockets.",
+                    Price = 58.00m,
+                    Color = "Khaki",
+                    ImageUrl = Img(IMG_CHINO),
+                    CategoryId = cat1,
+                    CreatedAt = new DateTime(2025, 7, 18, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Product
+                {
+                    Id = new Guid("20000000-0000-0000-0000-000000000024"),
+                    Name = "Bomber Jacket",
+                    Description = "Lightweight water-repellent bomber with ribbed cuffs and a matte zip. Layers over knitwear all season.",
+                    Price = 135.00m,
+                    Color = "Black",
+                    ImageUrl = Img(IMG_JACKET),
+                    CategoryId = cat1,
+                    CreatedAt = new DateTime(2026, 1, 12, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Product
+                {
+                    Id = new Guid("20000000-0000-0000-0000-000000000025"),
+                    Name = "Pleated Midi Skirt",
+                    Description = "Fluid accordion-pleated midi with an elastic-back waistband for all-day comfort.",
+                    Price = 62.00m,
+                    Color = "Blush",
+                    ImageUrl = Img(IMG_DRESS),
+                    CategoryId = cat2,
+                    CreatedAt = new DateTime(2025, 8, 22, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Product
+                {
+                    Id = new Guid("20000000-0000-0000-0000-000000000026"),
+                    Name = "Tailored Wool Blazer",
+                    Description = "Half-canvassed single-breasted blazer in Italian wool with natural shoulders and working cuffs.",
+                    Price = 168.00m,
+                    Color = "Camel",
+                    ImageUrl = Img(IMG_BLAZER),
+                    CategoryId = cat2,
+                    CreatedAt = new DateTime(2025, 11, 3, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Product
+                {
+                    Id = new Guid("20000000-0000-0000-0000-000000000027"),
+                    Name = "Silk Slip Dress",
+                    Description = "Bias-cut sandwashed silk slip with adjustable straps and a subtle cowl neck.",
+                    Price = 115.00m,
+                    Color = "Champagne",
+                    ImageUrl = Img(IMG_DRESS),
+                    CategoryId = cat2,
+                    CreatedAt = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Product
+                {
+                    Id = new Guid("20000000-0000-0000-0000-000000000028"),
+                    Name = "Ribbed Wool Beanie",
+                    Description = "Chunky rib-knit lambswool beanie with a fold-over cuff. One size, generous fit.",
+                    Price = 22.00m,
+                    Color = "Grey",
+                    ImageUrl = Img(IMG_CAP),
+                    CategoryId = cat3,
+                    CreatedAt = new DateTime(2025, 10, 20, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Product
+                {
+                    Id = new Guid("20000000-0000-0000-0000-000000000029"),
+                    Name = "Canvas Web Belt",
+                    Description = "Cotton-webbing belt with a brushed-metal box buckle and leather keeper. Trim to fit.",
+                    Price = 18.00m,
+                    Color = "Khaki",
+                    ImageUrl = Img(IMG_BELT),
+                    CategoryId = cat3,
+                    CreatedAt = new DateTime(2025, 6, 14, 0, 0, 0, DateTimeKind.Utc)
                 }
+            );
+
+            // Seeded accounts. Passwords are BCrypt (work factor 11):
+            //   admin@souqy.local / Admin123!      (Admin  — product & variant management)
+            //   nour@souqy.local  / Customer123!   (Customer — demo shopper)
+            //   omar@souqy.local  / Customer123!   (Customer — demo shopper)
+            // Log in via POST /api/v1/auth/login.
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                    FullName = "Souqy Admin",
+                    Email = "admin@souqy.local",
+                    PasswordHash = "$2a$11$Fk9B2IKFSWmqiZ4/GS/BueBRgv2Qfmyoyvi38gSloHTim10ngWlU2",
+                    Role = "Admin",
+                    CreatedAt = seedDate
+                },
+                new User
+                {
+                    Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1"),
+                    FullName = "Nour Hassan",
+                    Email = "nour@souqy.local",
+                    PasswordHash = "$2a$11$FFNhXAkvCy20R2rbAa1mFOetTfdMbfKbb9D0ZVfvAoDRh67qBzxuC",
+                    Role = "Customer",
+                    CreatedAt = seedDate
+                },
+                new User
+                {
+                    Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb2"),
+                    FullName = "Omar Khaled",
+                    Email = "omar@souqy.local",
+                    PasswordHash = "$2a$11$FFNhXAkvCy20R2rbAa1mFOetTfdMbfKbb9D0ZVfvAoDRh67qBzxuC",
+                    Role = "Customer",
+                    CreatedAt = seedDate
+                });
+
+            // Purchasable inventory: at least one ProductVariant per seeded product.
+            // The unique index UQ_ProductVariants_Product_Color means each colour of a
+            // product is a single row (its own size + stock).
+            modelBuilder.Entity<ProductVariant>().HasData(
+                // Classic T-Shirt
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000101"), ProductId = new Guid("10000000-0000-0000-0000-000000000001"), Color = "White", Size = "M", StockQuantity = 60, ColorImageUrl = Img(IMG_TEE) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000102"), ProductId = new Guid("10000000-0000-0000-0000-000000000001"), Color = "Black", Size = "L", StockQuantity = 40, ColorImageUrl = Img(IMG_SHIRT) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000103"), ProductId = new Guid("10000000-0000-0000-0000-000000000001"), Color = "Navy", Size = "S", StockQuantity = 25, ColorImageUrl = Img(IMG_SWEATER) },
+                // Denim Jeans
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000201"), ProductId = new Guid("10000000-0000-0000-0000-000000000002"), Color = "Blue", Size = "32", StockQuantity = 50, ColorImageUrl = Img(IMG_JEANS) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000202"), ProductId = new Guid("10000000-0000-0000-0000-000000000002"), Color = "Black", Size = "34", StockQuantity = 20, ColorImageUrl = Img(IMG_JEANS) },
+                // Summer Dress
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000301"), ProductId = new Guid("10000000-0000-0000-0000-000000000003"), Color = "Red", Size = "S", StockQuantity = 25, ColorImageUrl = Img(IMG_DRESS) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000302"), ProductId = new Guid("10000000-0000-0000-0000-000000000003"), Color = "Blue", Size = "M", StockQuantity = 12, ColorImageUrl = Img(IMG_DRESS) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000303"), ProductId = new Guid("10000000-0000-0000-0000-000000000003"), Color = "Yellow", Size = "S", StockQuantity = 8, ColorImageUrl = Img(IMG_DRESS) },
+                // Heels
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000401"), ProductId = new Guid("10000000-0000-0000-0000-000000000004"), Color = "Black", Size = "38", StockQuantity = 20, ColorImageUrl = Img(IMG_HEELS) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000402"), ProductId = new Guid("10000000-0000-0000-0000-000000000004"), Color = "Nude", Size = "37", StockQuantity = 10, ColorImageUrl = Img(IMG_HEELS) },
+                // Baseball Cap
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000501"), ProductId = new Guid("10000000-0000-0000-0000-000000000005"), Color = "Navy", Size = "One Size", StockQuantity = 120, ColorImageUrl = Img(IMG_CAP) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000502"), ProductId = new Guid("10000000-0000-0000-0000-000000000005"), Color = "Black", Size = "One Size", StockQuantity = 80, ColorImageUrl = Img(IMG_CAP) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000503"), ProductId = new Guid("10000000-0000-0000-0000-000000000005"), Color = "Olive", Size = "One Size", StockQuantity = 40, ColorImageUrl = Img(IMG_CAP) },
+                // Leather Belt
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000601"), ProductId = new Guid("10000000-0000-0000-0000-000000000006"), Color = "Brown", Size = "M", StockQuantity = 50, ColorImageUrl = Img(IMG_BELT) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000000602"), ProductId = new Guid("10000000-0000-0000-0000-000000000006"), Color = "Black", Size = "L", StockQuantity = 40, ColorImageUrl = Img(IMG_BELT) },
+
+                // --- Variants for the demo products -----------------------------
+                // Merino Wool Sweater
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002101"), ProductId = new Guid("20000000-0000-0000-0000-000000000021"), Color = "Oatmeal", Size = "M", StockQuantity = 30, ColorImageUrl = Img(IMG_SWEATER) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002102"), ProductId = new Guid("20000000-0000-0000-0000-000000000021"), Color = "Charcoal", Size = "L", StockQuantity = 18, ColorImageUrl = Img(IMG_HOODIE) },
+                // Oxford Button-Down Shirt
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002201"), ProductId = new Guid("20000000-0000-0000-0000-000000000022"), Color = "White", Size = "M", StockQuantity = 40, ColorImageUrl = Img(IMG_SHIRT) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002202"), ProductId = new Guid("20000000-0000-0000-0000-000000000022"), Color = "Sky Blue", Size = "L", StockQuantity = 25, ColorImageUrl = Img(IMG_TEE) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002203"), ProductId = new Guid("20000000-0000-0000-0000-000000000022"), Color = "Pink", Size = "S", StockQuantity = 12, ColorImageUrl = Img(IMG_SWEATER) },
+                // Slim Chino Trousers
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002301"), ProductId = new Guid("20000000-0000-0000-0000-000000000023"), Color = "Khaki", Size = "32", StockQuantity = 22, ColorImageUrl = Img(IMG_CHINO) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002302"), ProductId = new Guid("20000000-0000-0000-0000-000000000023"), Color = "Navy", Size = "34", StockQuantity = 18, ColorImageUrl = Img(IMG_JEANS) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002303"), ProductId = new Guid("20000000-0000-0000-0000-000000000023"), Color = "Olive", Size = "30", StockQuantity = 10, ColorImageUrl = Img(IMG_CHINO) },
+                // Bomber Jacket
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002401"), ProductId = new Guid("20000000-0000-0000-0000-000000000024"), Color = "Black", Size = "M", StockQuantity = 12, ColorImageUrl = Img(IMG_JACKET) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002402"), ProductId = new Guid("20000000-0000-0000-0000-000000000024"), Color = "Olive", Size = "L", StockQuantity = 9, ColorImageUrl = Img(IMG_HOODIE) },
+                // Pleated Midi Skirt
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002501"), ProductId = new Guid("20000000-0000-0000-0000-000000000025"), Color = "Blush", Size = "S", StockQuantity = 15, ColorImageUrl = Img(IMG_DRESS) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002502"), ProductId = new Guid("20000000-0000-0000-0000-000000000025"), Color = "Black", Size = "M", StockQuantity = 15, ColorImageUrl = Img(IMG_BLAZER) },
+                // Tailored Wool Blazer
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002601"), ProductId = new Guid("20000000-0000-0000-0000-000000000026"), Color = "Camel", Size = "M", StockQuantity = 8, ColorImageUrl = Img(IMG_BLAZER) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002602"), ProductId = new Guid("20000000-0000-0000-0000-000000000026"), Color = "Charcoal", Size = "S", StockQuantity = 6, ColorImageUrl = Img(IMG_JACKET) },
+                // Silk Slip Dress
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002701"), ProductId = new Guid("20000000-0000-0000-0000-000000000027"), Color = "Champagne", Size = "S", StockQuantity = 10, ColorImageUrl = Img(IMG_DRESS) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002702"), ProductId = new Guid("20000000-0000-0000-0000-000000000027"), Color = "Emerald", Size = "M", StockQuantity = 8, ColorImageUrl = Img(IMG_DRESS) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002703"), ProductId = new Guid("20000000-0000-0000-0000-000000000027"), Color = "Black", Size = "L", StockQuantity = 6, ColorImageUrl = Img(IMG_HEELS) },
+                // Ribbed Wool Beanie
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002801"), ProductId = new Guid("20000000-0000-0000-0000-000000000028"), Color = "Grey", Size = "One Size", StockQuantity = 60, ColorImageUrl = Img(IMG_CAP) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002802"), ProductId = new Guid("20000000-0000-0000-0000-000000000028"), Color = "Black", Size = "One Size", StockQuantity = 45, ColorImageUrl = Img(IMG_CAP) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002803"), ProductId = new Guid("20000000-0000-0000-0000-000000000028"), Color = "Mustard", Size = "One Size", StockQuantity = 20, ColorImageUrl = Img(IMG_CAP) },
+                // Canvas Web Belt
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002901"), ProductId = new Guid("20000000-0000-0000-0000-000000000029"), Color = "Khaki", Size = "M", StockQuantity = 40, ColorImageUrl = Img(IMG_BELT) },
+                new ProductVariant { Id = new Guid("b0000000-0000-0000-0000-000000002902"), ProductId = new Guid("20000000-0000-0000-0000-000000000029"), Color = "Navy", Size = "L", StockQuantity = 30, ColorImageUrl = Img(IMG_BELT) }
             );
 
             base.OnModelCreating(modelBuilder);
