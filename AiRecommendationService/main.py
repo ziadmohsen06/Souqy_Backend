@@ -39,7 +39,7 @@ class EmbeddingRequest(BaseModel):
 class EmbeddingResponse(BaseModel):
     embedding: list[float]
 
-class ProductRecommendation(BaseModel):
+class ProductRecommendation(BaseModel): 
     Id: str
     Name: str
     Description: str | None
